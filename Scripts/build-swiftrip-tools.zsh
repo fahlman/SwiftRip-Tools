@@ -16,5 +16,9 @@ mkdir -p "$SOURCE_DIR"
 mkdir -p "$ARTIFACTS_DIR"
 
 echo ""
-echo "No build steps are implemented yet."
-echo "Next milestone: add pinned source/download steps for libdvdcss and HandBrakeCLI."
+echo "Building libdvdcss..."
+"$TOOLS_DIR/Scripts/build-libdvdcss.zsh"
+
+echo ""
+echo "SwiftRipTools build complete."
+echo "Artifacts: $ARTIFACTS_DIR"
