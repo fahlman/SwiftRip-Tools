@@ -12,6 +12,7 @@ HANDBRAKE_VERSION="1.11.1"
 HANDBRAKE_ARCHIVE="HandBrake-${HANDBRAKE_VERSION}-source.tar.bz2"
 HANDBRAKE_URL="https://github.com/HandBrake/HandBrake/releases/download/${HANDBRAKE_VERSION}/${HANDBRAKE_ARCHIVE}"
 HANDBRAKE_SOURCE_DIR="$SOURCE_DIR/HandBrake-${HANDBRAKE_VERSION}"
+LIBDVDREAD_PATCH="$PATCHES_DIR/libdvdread/A03-macOS-hardened-runtime-dlopen.patch"
 
 ARM64_BUILD_DIR="$BUILD_DIR/arm64"
 ARM64_PREFIX_DIR="$BUILD_DIR/arm64-prefix"
@@ -45,8 +46,17 @@ else
 fi
 
 echo "Applying SwiftRip HandBrake patches..."
-cp "$PATCHES_DIR/libdvdread/A03-macOS-hardened-runtime-dlopen.patch" \
-   "$HANDBRAKE_SOURCE_DIR/contrib/libdvdread/A03-macOS-hardened-runtime-dlopen.patch"
+if [[ ! -f "$LIBDVDREAD_PATCH" ]]; then
+    echo "ERROR: Missing SwiftRip HandBrake patch:"
+    echo "$LIBDVDREAD_PATCH"
+    exit 1
+fi
+
+cp "$LIBDVDREAD_PATCH" "$HANDBRAKE_SOURCE_DIR/contrib/libdvdread/A03-macOS-hardened-runtime-dlopen.patch"
+if ! cmp -s "$LIBDVDREAD_PATCH" "$HANDBRAKE_SOURCE_DIR/contrib/libdvdread/A03-macOS-hardened-runtime-dlopen.patch"; then
+    echo "ERROR: Failed to apply SwiftRip libdvdread patch."
+    exit 1
+fi
 
 echo ""
 echo "Building HandBrakeCLI for arm64..."
@@ -92,6 +102,16 @@ echo ""
 echo "Checking for accidental MacPorts runtime dependencies..."
 if otool -L "$ARTIFACTS_DIR/HandBrakeCLI" | grep -q "/opt/local"; then
     echo "ERROR: HandBrakeCLI links against /opt/local libraries."
+    exit 1
+fi
+
+if ! grep -aFq "@executable_path/../Frameworks/libdvdcss.2.dylib" "$ARTIFACTS_DIR/HandBrakeCLI"; then
+    echo "ERROR: HandBrakeCLI does not contain the app Frameworks libdvdcss loader path."
+    exit 1
+fi
+
+if grep -aFq "/usr/local/lib/libdvdcss.2.dylib" "$ARTIFACTS_DIR/HandBrakeCLI"; then
+    echo "ERROR: HandBrakeCLI still contains the legacy /usr/local libdvdcss loader path."
     exit 1
 fi
 

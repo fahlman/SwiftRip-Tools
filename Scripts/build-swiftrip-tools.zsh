@@ -15,6 +15,25 @@ echo "Arch:      arm64"
 
 mkdir -p "$ARTIFACTS_DIR"
 
+required_commands=(
+    curl
+    file
+    otool
+    strings
+    tar
+    xcrun
+)
+
+echo ""
+echo "Checking required build tools..."
+for command_name in "${required_commands[@]}"; do
+    if ! command -v "$command_name" >/dev/null 2>&1; then
+        echo "ERROR: Required command not found: $command_name"
+        exit 1
+    fi
+done
+echo "Required build tools found."
+
 echo ""
 echo "Building libdvdcss..."
 "$SCRIPTS_DIR/build-libdvdcss.zsh"
@@ -26,31 +45,7 @@ echo "Building HandBrakeCLI..."
 echo ""
 echo "Final artifact check:"
 ls -lh "$ARTIFACTS_DIR"
-
-echo ""
-echo "HandBrakeCLI:"
-file "$ARTIFACTS_DIR/HandBrakeCLI"
-if ! file "$ARTIFACTS_DIR/HandBrakeCLI" | grep -q "arm64"; then
-    echo "ERROR: HandBrakeCLI is not arm64."
-    exit 1
-fi
-if otool -L "$ARTIFACTS_DIR/HandBrakeCLI" | grep -q "/opt/local"; then
-    echo "ERROR: HandBrakeCLI links against /opt/local libraries."
-    exit 1
-fi
-
-echo ""
-echo "libdvdcss.2.dylib:"
-file "$ARTIFACTS_DIR/libdvdcss.2.dylib"
-if ! file "$ARTIFACTS_DIR/libdvdcss.2.dylib" | grep -q "arm64"; then
-    echo "ERROR: libdvdcss.2.dylib is not arm64."
-    exit 1
-fi
-if otool -L "$ARTIFACTS_DIR/libdvdcss.2.dylib" | grep -q "/opt/local"; then
-    echo "ERROR: libdvdcss.2.dylib links against /opt/local libraries."
-    exit 1
-fi
-otool -D "$ARTIFACTS_DIR/libdvdcss.2.dylib"
+"$SCRIPTS_DIR/verify-swiftrip-tools.zsh"
 
 echo ""
 echo "SwiftRipTools build complete."
