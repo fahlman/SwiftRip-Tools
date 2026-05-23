@@ -6,6 +6,7 @@ TOOLS_DIR="$ROOT_DIR/SwiftRipTools"
 SOURCE_DIR="$TOOLS_DIR/Source"
 BUILD_DIR="$TOOLS_DIR/Build/handbrake"
 ARTIFACTS_DIR="$TOOLS_DIR/Artifacts/macos-arm64"
+PATCHES_DIR="$TOOLS_DIR/Patches/HandBrake"
 
 HANDBRAKE_VERSION="1.11.1"
 HANDBRAKE_ARCHIVE="HandBrake-${HANDBRAKE_VERSION}-source.tar.bz2"
@@ -42,6 +43,10 @@ if [[ ! -d "$HANDBRAKE_SOURCE_DIR" ]]; then
 else
     echo "Using existing source: $HANDBRAKE_SOURCE_DIR"
 fi
+
+echo "Applying SwiftRip HandBrake patches..."
+cp "$PATCHES_DIR/libdvdread/A03-macOS-hardened-runtime-dlopen.patch" \
+   "$HANDBRAKE_SOURCE_DIR/contrib/libdvdread/A03-macOS-hardened-runtime-dlopen.patch"
 
 echo ""
 echo "Building HandBrakeCLI for arm64..."
