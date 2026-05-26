@@ -5,7 +5,8 @@ ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 TOOLS_DIR="$ROOT_DIR/SwiftRipTools"
 SOURCE_DIR="$TOOLS_DIR/Source"
 BUILD_DIR="$TOOLS_DIR/Build/handbrake"
-ARTIFACTS_DIR="$TOOLS_DIR/Artifacts/macos-arm64"
+TOOLS_ARCH="${SWIFTRIP_TOOLS_ARCH:-arm64}"
+ARTIFACTS_DIR="$TOOLS_DIR/Artifacts/macos-$TOOLS_ARCH"
 PATCHES_DIR="$TOOLS_DIR/Patches/HandBrake"
 
 HANDBRAKE_VERSION="1.11.1"
@@ -15,8 +16,8 @@ HANDBRAKE_SHA256="4ff6a8a57c9b1cea51025306e313eee423b0fa1a8b7799aeaa8d4d7c457a73
 HANDBRAKE_SOURCE_DIR="$SOURCE_DIR/HandBrake-${HANDBRAKE_VERSION}"
 LIBDVDREAD_PATCH="$PATCHES_DIR/libdvdread/A03-macOS-hardened-runtime-dlopen.patch"
 
-ARM64_BUILD_DIR="$BUILD_DIR/arm64"
-ARM64_PREFIX_DIR="$BUILD_DIR/arm64-prefix"
+ARCH_BUILD_DIR="$BUILD_DIR/$TOOLS_ARCH"
+ARCH_PREFIX_DIR="$BUILD_DIR/$TOOLS_ARCH-prefix"
 
 echo "SwiftRipTools: build HandBrakeCLI"
 echo "Root:      $ROOT_DIR"
@@ -24,7 +25,17 @@ echo "Source:    $SOURCE_DIR"
 echo "Build:     $BUILD_DIR"
 echo "Artifacts: $ARTIFACTS_DIR"
 echo "Version:   $HANDBRAKE_VERSION"
-echo "Arch:      arm64"
+echo "Arch:      $TOOLS_ARCH"
+
+case "$TOOLS_ARCH" in
+    arm64|x86_64)
+        ;;
+    *)
+        echo "ERROR: Unsupported HandBrakeCLI architecture: $TOOLS_ARCH" >&2
+        echo "Supported architectures: arm64, x86_64" >&2
+        exit 64
+        ;;
+esac
 
 mkdir -p "$SOURCE_DIR"
 mkdir -p "$BUILD_DIR"
@@ -69,9 +80,9 @@ if ! cmp -s "$LIBDVDREAD_PATCH" "$HANDBRAKE_SOURCE_DIR/contrib/libdvdread/A03-ma
 fi
 
 echo ""
-echo "Building HandBrakeCLI for arm64..."
+echo "Building HandBrakeCLI for $TOOLS_ARCH..."
 
-rm -rf "$ARM64_BUILD_DIR" "$ARM64_PREFIX_DIR"
+rm -rf "$ARCH_BUILD_DIR" "$ARCH_PREFIX_DIR"
 
 cd "$HANDBRAKE_SOURCE_DIR"
 
@@ -84,21 +95,21 @@ env -u CPATH \
     -u CPPFLAGS \
     -u CXXFLAGS \
     -u LDFLAGS \
-    PKG_CONFIG_LIBDIR="$ARM64_BUILD_DIR/contrib/lib/pkgconfig" \
+    PKG_CONFIG_LIBDIR="$ARCH_BUILD_DIR/contrib/lib/pkgconfig" \
     PATH="/opt/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
     ./configure \
       --force \
       --disable-xcode \
-      --arch arm64 \
-      --build "$ARM64_BUILD_DIR" \
-      --prefix "$ARM64_PREFIX_DIR" \
+      --arch "$TOOLS_ARCH" \
+      --build "$ARCH_BUILD_DIR" \
+      --prefix "$ARCH_PREFIX_DIR" \
       --launch \
       --launch-jobs 0
 
 echo ""
 echo "Copying HandBrakeCLI artifact..."
 
-cp "$ARM64_BUILD_DIR/HandBrakeCLI" "$ARTIFACTS_DIR/HandBrakeCLI"
+cp "$ARCH_BUILD_DIR/HandBrakeCLI" "$ARTIFACTS_DIR/HandBrakeCLI"
 
 echo ""
 echo "Built artifact: $ARTIFACTS_DIR/HandBrakeCLI"

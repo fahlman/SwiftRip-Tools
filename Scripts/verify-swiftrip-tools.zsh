@@ -2,14 +2,26 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-ARTIFACTS_DIR="$ROOT_DIR/SwiftRipTools/Artifacts/macos-arm64"
+TOOLS_ARCH="${SWIFTRIP_TOOLS_ARCH:-arm64}"
+ARTIFACTS_DIR="$ROOT_DIR/SwiftRipTools/Artifacts/macos-$TOOLS_ARCH"
 HANDBRAKE_ARTIFACT="$ARTIFACTS_DIR/HandBrakeCLI"
 LIBDVDCSS_ARTIFACT="$ARTIFACTS_DIR/libdvdcss.2.dylib"
 LIBDVDCSS_FRAMEWORKS_PATH="@executable_path/../Frameworks/libdvdcss.2.dylib"
 LEGACY_LIBDVDCSS_PATH="/usr/local/lib/libdvdcss.2.dylib"
 
+case "$TOOLS_ARCH" in
+    arm64|x86_64)
+        ;;
+    *)
+        echo "ERROR: Unsupported SwiftRipTools architecture: $TOOLS_ARCH" >&2
+        echo "Supported architectures: arm64, x86_64" >&2
+        exit 64
+        ;;
+esac
+
 echo "SwiftRipTools: verify artifacts"
 echo "Artifacts: $ARTIFACTS_DIR"
+echo "Arch:      $TOOLS_ARCH"
 
 if [[ ! -x "$HANDBRAKE_ARTIFACT" ]]; then
     echo "ERROR: Missing executable HandBrakeCLI artifact:"
@@ -26,8 +38,8 @@ fi
 echo ""
 echo "HandBrakeCLI:"
 file "$HANDBRAKE_ARTIFACT"
-if ! file "$HANDBRAKE_ARTIFACT" | grep -q "arm64"; then
-    echo "ERROR: HandBrakeCLI is not arm64."
+if ! file "$HANDBRAKE_ARTIFACT" | grep -q "$TOOLS_ARCH"; then
+    echo "ERROR: HandBrakeCLI is not $TOOLS_ARCH."
     exit 1
 fi
 
@@ -51,8 +63,8 @@ fi
 echo ""
 echo "libdvdcss.2.dylib:"
 file "$LIBDVDCSS_ARTIFACT"
-if ! file "$LIBDVDCSS_ARTIFACT" | grep -q "arm64"; then
-    echo "ERROR: libdvdcss.2.dylib is not arm64."
+if ! file "$LIBDVDCSS_ARTIFACT" | grep -q "$TOOLS_ARCH"; then
+    echo "ERROR: libdvdcss.2.dylib is not $TOOLS_ARCH."
     exit 1
 fi
 

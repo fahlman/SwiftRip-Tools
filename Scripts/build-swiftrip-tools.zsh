@@ -4,14 +4,25 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 TOOLS_DIR="$ROOT_DIR/SwiftRipTools"
 SCRIPTS_DIR="$TOOLS_DIR/Scripts"
-ARTIFACTS_DIR="$TOOLS_DIR/Artifacts/macos-arm64"
+TOOLS_ARCH="${SWIFTRIP_TOOLS_ARCH:-arm64}"
+ARTIFACTS_DIR="$TOOLS_DIR/Artifacts/macos-$TOOLS_ARCH"
+
+case "$TOOLS_ARCH" in
+    arm64|x86_64)
+        ;;
+    *)
+        echo "ERROR: Unsupported SwiftRipTools architecture: $TOOLS_ARCH" >&2
+        echo "Supported architectures: arm64, x86_64" >&2
+        exit 64
+        ;;
+esac
 
 echo "SwiftRipTools build"
 echo "Root:      $ROOT_DIR"
 echo "Tools:     $TOOLS_DIR"
 echo "Scripts:   $SCRIPTS_DIR"
 echo "Artifacts: $ARTIFACTS_DIR"
-echo "Arch:      arm64"
+echo "Arch:      $TOOLS_ARCH"
 
 mkdir -p "$ARTIFACTS_DIR"
 
@@ -36,20 +47,20 @@ echo "Required build tools found."
 
 echo ""
 echo "Building libdvdcss..."
-"$SCRIPTS_DIR/build-libdvdcss.zsh"
+SWIFTRIP_TOOLS_ARCH="$TOOLS_ARCH" "$SCRIPTS_DIR/build-libdvdcss.zsh"
 
 echo ""
 echo "Building HandBrakeCLI..."
-"$SCRIPTS_DIR/build-handbrakecli.zsh"
+SWIFTRIP_TOOLS_ARCH="$TOOLS_ARCH" "$SCRIPTS_DIR/build-handbrakecli.zsh"
 
 echo ""
 echo "Final artifact check:"
 ls -lh "$ARTIFACTS_DIR"
-"$SCRIPTS_DIR/verify-swiftrip-tools.zsh"
+SWIFTRIP_TOOLS_ARCH="$TOOLS_ARCH" "$SCRIPTS_DIR/verify-swiftrip-tools.zsh"
 
 echo ""
 echo "SwiftRipTools build complete."
 
 echo ""
 echo "To create the distributable CI/local bootstrap package, run:"
-echo "$SCRIPTS_DIR/package-swiftrip-tools.zsh"
+echo "$SCRIPTS_DIR/package-swiftrip-tools.zsh --arch $TOOLS_ARCH"

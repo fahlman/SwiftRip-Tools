@@ -5,7 +5,8 @@ ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 TOOLS_DIR="$ROOT_DIR/SwiftRipTools"
 SOURCE_DIR="$TOOLS_DIR/Source"
 BUILD_DIR="$TOOLS_DIR/Build/libdvdcss"
-ARTIFACTS_DIR="$TOOLS_DIR/Artifacts/macos-arm64"
+TOOLS_ARCH="${SWIFTRIP_TOOLS_ARCH:-arm64}"
+ARTIFACTS_DIR="$TOOLS_DIR/Artifacts/macos-$TOOLS_ARCH"
 
 LIBDVDCSS_VERSION="1.5.0"
 LIBDVDCSS_ARCHIVE="libdvdcss-${LIBDVDCSS_VERSION}.tar.xz"
@@ -13,7 +14,7 @@ LIBDVDCSS_SOURCE_DIR="$SOURCE_DIR/libdvdcss-${LIBDVDCSS_VERSION}"
 LIBDVDCSS_URL="https://get.videolan.org/libdvdcss/${LIBDVDCSS_VERSION}/${LIBDVDCSS_ARCHIVE}"
 LIBDVDCSS_SHA256="529463e4d1befef82e5c6e470db7661a2db0343e092a2fb0d6c037cab8a5c399"
 
-ARM64_PREFIX="$BUILD_DIR/arm64-prefix"
+ARCH_PREFIX="$BUILD_DIR/$TOOLS_ARCH-prefix"
 
 MESON_CMD="${MESON_CMD:-}"
 NINJA_CMD="${NINJA_CMD:-}"
@@ -24,7 +25,17 @@ echo "Source:    $SOURCE_DIR"
 echo "Build:     $BUILD_DIR"
 echo "Artifacts: $ARTIFACTS_DIR"
 echo "Version:   $LIBDVDCSS_VERSION"
-echo "Arch:      arm64"
+echo "Arch:      $TOOLS_ARCH"
+
+case "$TOOLS_ARCH" in
+    arm64|x86_64)
+        ;;
+    *)
+        echo "ERROR: Unsupported libdvdcss architecture: $TOOLS_ARCH" >&2
+        echo "Supported architectures: arm64, x86_64" >&2
+        exit 64
+        ;;
+esac
 
 mkdir -p "$SOURCE_DIR"
 mkdir -p "$BUILD_DIR"
@@ -120,19 +131,19 @@ EOF
     "$NINJA_CMD" -C "$arch_build_dir" install
 }
 
-build_arch "arm64" "$ARM64_PREFIX"
+build_arch "$TOOLS_ARCH" "$ARCH_PREFIX"
 
-ARM64_DYLIB="$ARM64_PREFIX/lib/libdvdcss.2.dylib"
+ARCH_DYLIB="$ARCH_PREFIX/lib/libdvdcss.2.dylib"
 ARTIFACT_DYLIB="$ARTIFACTS_DIR/libdvdcss.2.dylib"
 
-if [[ ! -f "$ARM64_DYLIB" ]]; then
-    echo "Missing arm64 dylib: $ARM64_DYLIB" >&2
+if [[ ! -f "$ARCH_DYLIB" ]]; then
+    echo "Missing $TOOLS_ARCH dylib: $ARCH_DYLIB" >&2
     exit 1
 fi
 
 echo ""
-echo "Copying arm64 dylib artifact..."
-cp "$ARM64_DYLIB" "$ARTIFACT_DYLIB"
+echo "Copying $TOOLS_ARCH dylib artifact..."
+cp "$ARCH_DYLIB" "$ARTIFACT_DYLIB"
 
 install_name_tool -id "@rpath/libdvdcss.2.dylib" "$ARTIFACT_DYLIB"
 

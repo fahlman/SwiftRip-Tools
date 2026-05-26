@@ -3,8 +3,41 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 TOOLS_DIR="$ROOT_DIR/SwiftRipTools"
-MANIFEST_FILE="$TOOLS_DIR/Manifest/swiftrip-tools.json"
+TOOLS_ARCH="${SWIFTRIP_TOOLS_ARCH:-arm64}"
 PACKAGE_DIR="$TOOLS_DIR/Packages"
+REPOSITORY="fahlman/SwiftRip"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --arch)
+            TOOLS_ARCH="${2:-}"
+            shift 2
+            ;;
+        *)
+            echo "Usage: $0 [--arch arm64|x86_64]"
+            exit 64
+            ;;
+    esac
+done
+
+case "$TOOLS_ARCH" in
+    arm64|x86_64)
+        ;;
+    *)
+        echo "ERROR: Unsupported SwiftRipTools architecture: $TOOLS_ARCH" >&2
+        echo "Supported architectures: arm64, x86_64" >&2
+        exit 64
+        ;;
+esac
+
+case "$TOOLS_ARCH" in
+    arm64)
+        MANIFEST_FILE="$TOOLS_DIR/Manifest/swiftrip-tools.json"
+        ;;
+    x86_64)
+        MANIFEST_FILE="$TOOLS_DIR/Manifest/swiftrip-tools-x86_64.json"
+        ;;
+esac
 
 json_value() {
     local key="$1"
@@ -22,14 +55,13 @@ EXPECTED_SHA256="$(json_value sha256)"
 PACKAGE_PATH="$PACKAGE_DIR/$ARTIFACT_NAME"
 RELEASE_URL="$(json_value url)"
 RELEASE_TAG="$(basename "$(dirname "$RELEASE_URL")")"
-REPOSITORY="fahlman/SwiftRip"
 
 if [[ ! -f "$PACKAGE_PATH" ]]; then
     echo "ERROR: Missing package:"
     echo "$PACKAGE_PATH"
     echo ""
     echo "Create it first with:"
-    echo "$TOOLS_DIR/Scripts/package-swiftrip-tools.zsh"
+    echo "$TOOLS_DIR/Scripts/package-swiftrip-tools.zsh --arch $TOOLS_ARCH"
     exit 1
 fi
 
@@ -46,14 +78,19 @@ echo "Repository: $REPOSITORY"
 echo "Tag:        $RELEASE_TAG"
 echo "Package:    $PACKAGE_PATH"
 echo "SHA-256:    $ACTUAL_SHA256"
+echo "Arch:       $TOOLS_ARCH"
 
 if command -v gh >/dev/null 2>&1; then
     echo ""
     echo "Publishing with GitHub CLI..."
-    gh release create "$RELEASE_TAG" "$PACKAGE_PATH" \
-        --repo "$REPOSITORY" \
-        --title "$RELEASE_TAG" \
-        --notes "SwiftRip bundled tool package. SHA-256: $ACTUAL_SHA256"
+    if gh release view "$RELEASE_TAG" --repo "$REPOSITORY" >/dev/null 2>&1; then
+        gh release upload "$RELEASE_TAG" "$PACKAGE_PATH" --repo "$REPOSITORY" --clobber
+    else
+        gh release create "$RELEASE_TAG" "$PACKAGE_PATH" \
+            --repo "$REPOSITORY" \
+            --title "$RELEASE_TAG" \
+            --notes "SwiftRip bundled tool package. SHA-256: $ACTUAL_SHA256"
+    fi
     exit 0
 fi
 
