@@ -9,14 +9,13 @@ SOURCE_DIR="$TOOLS_DIR/Source"
 BUILD_DIR="$TOOLS_DIR/Build/handbrake"
 TOOLS_ARCH="${SWIFTRIP_TOOLS_ARCH:-arm64}"
 ARTIFACTS_DIR="$TOOLS_DIR/Artifacts/macos-$TOOLS_ARCH"
-PATCHES_DIR="$TOOLS_DIR/Patches/HandBrake"
 
 HANDBRAKE_VERSION="1.11.1"
-HANDBRAKE_ARCHIVE="HandBrake-${HANDBRAKE_VERSION}-source.tar.bz2"
-HANDBRAKE_URL="https://github.com/HandBrake/HandBrake/releases/download/${HANDBRAKE_VERSION}/${HANDBRAKE_ARCHIVE}"
-HANDBRAKE_SHA256="4ff6a8a57c9b1cea51025306e313eee423b0fa1a8b7799aeaa8d4d7c457a7310"
-HANDBRAKE_SOURCE_DIR="$SOURCE_DIR/HandBrake-${HANDBRAKE_VERSION}"
-LIBDVDREAD_PATCH="$PATCHES_DIR/libdvdread/A03-macOS-hardened-runtime-dlopen.patch"
+HANDBRAKE_REPOSITORY_URL="https://github.com/fahlman/SwiftRip-HandBrake.git"
+HANDBRAKE_SWIFTRIP_TAG="swiftrip-handbrake-${HANDBRAKE_VERSION}"
+HANDBRAKE_SWIFTRIP_COMMIT="49730cd08f092193ab0e16be8b68be80d7a989ce"
+HANDBRAKE_SOURCE_DIR="$SOURCE_DIR/HandBrake-${HANDBRAKE_VERSION}-swiftrip"
+LIBDVDREAD_PATCH="$HANDBRAKE_SOURCE_DIR/contrib/libdvdread/A03-macOS-hardened-runtime-dlopen.patch"
 
 ARCH_BUILD_DIR="$BUILD_DIR/$TOOLS_ARCH"
 ARCH_PREFIX_DIR="$BUILD_DIR/$TOOLS_ARCH-prefix"
@@ -30,9 +29,11 @@ echo "Source:    $SOURCE_DIR"
 echo "Build:     $BUILD_DIR"
 echo "Artifacts: $ARTIFACTS_DIR"
 echo "Version:   $HANDBRAKE_VERSION"
+echo "Fork tag:  $HANDBRAKE_SWIFTRIP_TAG"
 echo "Arch:      $TOOLS_ARCH"
 
 assert_supported_tools_arch "$TOOLS_ARCH" "HandBrakeCLI"
+require_command git
 
 mkdir -p "$SOURCE_DIR"
 mkdir -p "$BUILD_DIR"
@@ -40,35 +41,43 @@ mkdir -p "$ARTIFACTS_DIR"
 
 cd "$SOURCE_DIR"
 
-if [[ ! -f "$HANDBRAKE_ARCHIVE" ]]; then
-    echo "Downloading $HANDBRAKE_ARCHIVE from HandBrake GitHub releases..."
-    curl -L -o "$HANDBRAKE_ARCHIVE" "$HANDBRAKE_URL"
-else
-    echo "Using existing archive: $SOURCE_DIR/$HANDBRAKE_ARCHIVE"
+if [[ -d "$HANDBRAKE_SOURCE_DIR/.git" ]]; then
+    echo "Using existing source: $HANDBRAKE_SOURCE_DIR"
+    ACTUAL_HANDBRAKE_COMMIT="$(git -C "$HANDBRAKE_SOURCE_DIR" rev-parse HEAD)"
+    if [[ "$ACTUAL_HANDBRAKE_COMMIT" != "$HANDBRAKE_SWIFTRIP_COMMIT" ]]; then
+        echo "Existing HandBrake source is not the pinned SwiftRip revision; refreshing..."
+        rm -rf "$HANDBRAKE_SOURCE_DIR"
+    fi
+elif [[ -e "$HANDBRAKE_SOURCE_DIR" ]]; then
+    echo "Removing non-Git HandBrake source directory: $HANDBRAKE_SOURCE_DIR"
+    rm -rf "$HANDBRAKE_SOURCE_DIR"
 fi
 
-echo "Verifying $HANDBRAKE_ARCHIVE checksum..."
-ACTUAL_HANDBRAKE_SHA256="$(sha256_file "$HANDBRAKE_ARCHIVE")"
-if [[ "$ACTUAL_HANDBRAKE_SHA256" != "$HANDBRAKE_SHA256" ]]; then
-    echo "ERROR: $HANDBRAKE_ARCHIVE checksum mismatch."
-    echo "Expected: $HANDBRAKE_SHA256"
-    echo "Actual:   $ACTUAL_HANDBRAKE_SHA256"
+if [[ ! -d "$HANDBRAKE_SOURCE_DIR/.git" ]]; then
+    echo "Cloning SwiftRip HandBrake fork..."
+    git clone \
+      --depth 1 \
+      --branch "$HANDBRAKE_SWIFTRIP_TAG" \
+      "$HANDBRAKE_REPOSITORY_URL" \
+      "$HANDBRAKE_SOURCE_DIR"
+fi
+
+ACTUAL_HANDBRAKE_COMMIT="$(git -C "$HANDBRAKE_SOURCE_DIR" rev-parse HEAD)"
+if [[ "$ACTUAL_HANDBRAKE_COMMIT" != "$HANDBRAKE_SWIFTRIP_COMMIT" ]]; then
+    echo "ERROR: SwiftRip HandBrake fork revision mismatch."
+    echo "Expected: $HANDBRAKE_SWIFTRIP_COMMIT"
+    echo "Actual:   $ACTUAL_HANDBRAKE_COMMIT"
     exit 1
 fi
 
-if [[ ! -d "$HANDBRAKE_SOURCE_DIR" ]]; then
-    echo "Extracting $HANDBRAKE_ARCHIVE..."
-    tar -xjf "$HANDBRAKE_ARCHIVE"
-else
-    echo "Using existing source: $HANDBRAKE_SOURCE_DIR"
+echo "Verifying SwiftRip HandBrake fork patch..."
+require_file "$LIBDVDREAD_PATCH" "SwiftRip HandBrake fork libdvdread patch"
+if ! grep -Fq "@executable_path/../Frameworks/libdvdcss.2.dylib" "$LIBDVDREAD_PATCH"; then
+    echo "ERROR: SwiftRip HandBrake fork patch does not use the app Frameworks libdvdcss path."
+    exit 1
 fi
-
-echo "Applying SwiftRip HandBrake patches..."
-require_file "$LIBDVDREAD_PATCH" "SwiftRip HandBrake patch"
-
-cp "$LIBDVDREAD_PATCH" "$HANDBRAKE_SOURCE_DIR/contrib/libdvdread/A03-macOS-hardened-runtime-dlopen.patch"
-if ! cmp -s "$LIBDVDREAD_PATCH" "$HANDBRAKE_SOURCE_DIR/contrib/libdvdread/A03-macOS-hardened-runtime-dlopen.patch"; then
-    echo "ERROR: Failed to apply SwiftRip libdvdread patch."
+if grep -Fq "/usr/local/lib/libdvdcss.2.dylib" "$LIBDVDREAD_PATCH"; then
+    echo "ERROR: SwiftRip HandBrake fork patch still references /usr/local libdvdcss."
     exit 1
 fi
 

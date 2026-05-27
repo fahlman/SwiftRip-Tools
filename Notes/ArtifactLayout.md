@@ -36,6 +36,6 @@ SwiftRip.app/
 - Large generated artifacts should not be committed directly to Git.
 - CI and clean checkouts should restore artifacts from the pinned package for the selected architecture under `Manifest/`.
 - The app and bundled tools must be signed together.
-- HandBrake source changes should live as tracked patches under `Patches/HandBrake/`, not as edits inside ignored extracted source trees.
+- HandBrake source changes should live in the pinned `SwiftRip-HandBrake` fork tag, not as edits inside ignored extracted source trees.
 - `HandBrakeCLI` must load `libdvdcss.2.dylib` from `@executable_path/../Frameworks/libdvdcss.2.dylib`.
 - `Contents/MacOS/libdvdcss.2.dylib` should not exist in the built app bundle.

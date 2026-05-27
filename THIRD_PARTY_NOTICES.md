@@ -8,6 +8,7 @@ SwiftRip-Tools builds, packages, or verifies third-party software components. Th
 - Project: HandBrake
 - Website: https://handbrake.fr/
 - Source: https://github.com/HandBrake/HandBrake
+- SwiftRip fork source: https://github.com/fahlman/SwiftRip-HandBrake/tree/swiftrip-handbrake-1.11.1
 - Current SwiftRip-Tools target version: 1.11.1
 - License: GNU General Public License version 2
 - Use in SwiftRip-Tools: built as the command-line ripping/transcoding engine consumed by SwiftRip.app.

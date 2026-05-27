@@ -49,15 +49,15 @@ Force a rebuild with:
 Scripts/bootstrap-tools.zsh --force
 ```
 
-## HandBrake patching
+## HandBrake fork
 
-SwiftRip does not fork HandBrake. App-specific changes are tracked as patch files under:
+SwiftRip builds HandBrakeCLI from this pinned fork tag:
 
 ```text
-Patches/HandBrake/
+https://github.com/fahlman/SwiftRip-HandBrake/tree/swiftrip-handbrake-1.11.1
 ```
 
-`build-handbrakecli.zsh` copies those patches into the extracted HandBrake source before each build. The current `libdvdread` patch makes HandBrake load `libdvdcss.2.dylib` from:
+That tag starts from upstream HandBrake 1.11.1 and contains SwiftRip's app-specific `libdvdread` patch. The patch makes HandBrake load `libdvdcss.2.dylib` from:
 
 ```text
 @executable_path/../Frameworks/libdvdcss.2.dylib
@@ -89,7 +89,7 @@ HandBrake and libdvdcss releases are monitored by:
 Scripts/check-upstream-updates.zsh
 ```
 
-The `Upstream Updates` GitHub Actions workflow runs that check every Monday and can also be started manually. When either upstream version is newer than the pinned SwiftRip-Tools version, the workflow opens or updates a GitHub issue with the version table and release checklist. SwiftRip-Tools still keeps app-specific HandBrake changes as local patches instead of maintaining a long-lived HandBrake fork.
+The `Upstream Updates` GitHub Actions workflow runs that check every Monday and can also be started manually. When either upstream version is newer than the pinned SwiftRip-Tools version, the workflow opens or updates a GitHub issue with the version table and release checklist.
 
 ## Packaging
 
