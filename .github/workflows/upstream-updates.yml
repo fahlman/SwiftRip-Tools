@@ -1,0 +1,46 @@
+name: Upstream Updates
+
+on:
+  schedule:
+    - cron: "0 14 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    name: Check Upstream Components
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check upstream versions
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: Scripts/check-upstream-updates.zsh
+
+      - name: Open or update tracking issue
+        if: steps.check.outputs.update_available == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_TITLE: ${{ steps.check.outputs.issue_title }}
+          ISSUE_BODY_PATH: ${{ steps.check.outputs.issue_body_path }}
+        run: |
+          existing_issue="$(
+            gh issue list \
+              --state open \
+              --search "$ISSUE_TITLE in:title" \
+              --json number \
+              --jq '.[0].number // empty'
+          )"
+
+          if [[ -n "$existing_issue" ]]; then
+            gh issue comment "$existing_issue" --body-file "$ISSUE_BODY_PATH"
+          else
+            gh issue create --title "$ISSUE_TITLE" --body-file "$ISSUE_BODY_PATH"
+          fi

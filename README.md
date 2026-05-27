@@ -81,6 +81,16 @@ Run repository validation with:
 Scripts/validate-repo.zsh
 ```
 
+## Upstream update monitoring
+
+HandBrake and libdvdcss releases are monitored by:
+
+```sh
+Scripts/check-upstream-updates.zsh
+```
+
+The `Upstream Updates` GitHub Actions workflow runs that check every Monday and can also be started manually. When either upstream version is newer than the pinned SwiftRipTools version, the workflow opens or updates a GitHub issue with the version table and release checklist. SwiftRipTools still keeps app-specific HandBrake changes as local patches instead of maintaining a long-lived HandBrake fork.
+
 ## Packaging
 
 After a successful local rebuild, create the downloadable tool package with:
