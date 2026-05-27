@@ -49,7 +49,7 @@ require_value() {
 
 assert_supported_tools_arch() {
     local arch="$1"
-    local label="${2:-SwiftRipTools}"
+    local label="${2:-SwiftRip-Tools}"
 
     case "$arch" in
         arm64|x86_64)

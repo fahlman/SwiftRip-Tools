@@ -24,7 +24,7 @@ NINJA_CMD="${NINJA_CMD:-}"
 # shellcheck source=/dev/null
 source "$COMMON_SCRIPT"
 
-echo "SwiftRipTools: build libdvdcss"
+echo "SwiftRip-Tools: build libdvdcss"
 echo "Root:      $ROOT_DIR"
 echo "Source:    $SOURCE_DIR"
 echo "Build:     $BUILD_DIR"

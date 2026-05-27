@@ -1,6 +1,6 @@
 # Security Policy
 
-SwiftRipTools packages executable code that is bundled into SwiftRip.app, so security issues in this repository should be treated as release-affecting.
+SwiftRip-Tools packages executable code that is bundled into SwiftRip.app, so security issues in this repository should be treated as release-affecting.
 
 ## Supported Versions
 
@@ -18,4 +18,4 @@ Include:
 - expected impact
 - any relevant upstream advisory or CVE
 
-Security fixes may require rebuilding the affected third-party component, publishing new SwiftRipTools packages, updating SwiftRip manifests, and shipping a SwiftRip app update.
+Security fixes may require rebuilding the affected third-party component, publishing new SwiftRip-Tools packages, updating SwiftRip manifests, and shipping a SwiftRip app update.

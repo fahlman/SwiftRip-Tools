@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-SwiftRipTools builds, packages, or verifies third-party software components. Those components are copyrighted by their respective authors and are licensed under their own license terms.
+SwiftRip-Tools builds, packages, or verifies third-party software components. Those components are copyrighted by their respective authors and are licensed under their own license terms.
 
 ## HandBrake / HandBrakeCLI
 
@@ -8,9 +8,9 @@ SwiftRipTools builds, packages, or verifies third-party software components. Tho
 - Project: HandBrake
 - Website: https://handbrake.fr/
 - Source: https://github.com/HandBrake/HandBrake
-- Current SwiftRipTools target version: 1.11.1
+- Current SwiftRip-Tools target version: 1.11.1
 - License: GNU General Public License version 2
-- Use in SwiftRipTools: built as the command-line ripping/transcoding engine consumed by SwiftRip.app.
+- Use in SwiftRip-Tools: built as the command-line ripping/transcoding engine consumed by SwiftRip.app.
 
 HandBrakeCLI is not authored by the SwiftRip project. HandBrake and HandBrakeCLI remain under the copyright and license notices of the HandBrake project and its contributors.
 
@@ -20,15 +20,15 @@ HandBrakeCLI is not authored by the SwiftRip project. HandBrake and HandBrakeCLI
 - Project: VideoLAN libdvdcss
 - Website: https://www.videolan.org/developers/libdvdcss.html
 - Source: https://code.videolan.org/videolan/libdvdcss
-- Current SwiftRipTools target version: 1.5.0
+- Current SwiftRip-Tools target version: 1.5.0
 - License: GNU General Public License
-- Use in SwiftRipTools: built as an app-local dynamic library so SwiftRip.app does not rely on Homebrew, MacPorts, `/usr/local/lib`, `/opt/local/lib`, or other user-installed runtime libraries.
+- Use in SwiftRip-Tools: built as an app-local dynamic library so SwiftRip.app does not rely on Homebrew, MacPorts, `/usr/local/lib`, `/opt/local/lib`, or other user-installed runtime libraries.
 
 libdvdcss is not authored by the SwiftRip project. libdvdcss remains under the copyright and license notices of the VideoLAN project and its contributors.
 
 ## Build Tools
 
-SwiftRipTools may use developer-installed build tools such as:
+SwiftRip-Tools may use developer-installed build tools such as:
 
 - clang / Xcode command-line tools
 - Meson

@@ -7,7 +7,7 @@ TOOLS_DIR="$ROOT_DIR"
 COMMON_SCRIPT="$SCRIPT_DIR/lib/common.zsh"
 TOOLS_ARCH="${SWIFTRIP_TOOLS_ARCH:-arm64}"
 PACKAGE_DIR="$TOOLS_DIR/Packages"
-REPOSITORY="${SWIFTRIP_TOOLS_REPOSITORY:-fahlman/SwiftRipTools}"
+REPOSITORY="${SWIFTRIP_TOOLS_REPOSITORY:-fahlman/SwiftRip-Tools}"
 
 # shellcheck source=/dev/null
 source "$COMMON_SCRIPT"
@@ -30,7 +30,7 @@ assert_supported_tools_arch "$TOOLS_ARCH"
 MANIFEST_FILE="$(manifest_file_for_arch "$TOOLS_DIR" "$TOOLS_ARCH")"
 
 if [[ ! -f "$MANIFEST_FILE" ]]; then
-    echo "ERROR: Missing SwiftRipTools manifest:"
+    echo "ERROR: Missing SwiftRip-Tools manifest:"
     echo "$MANIFEST_FILE"
     exit 1
 fi
@@ -58,7 +58,7 @@ if [[ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]]; then
     exit 1
 fi
 
-echo "SwiftRipTools publish"
+echo "SwiftRip-Tools publish"
 echo "Repository: $REPOSITORY"
 echo "Tag:        $RELEASE_TAG"
 echo "Package:    $PACKAGE_PATH"

@@ -1,6 +1,6 @@
-# SwiftRipTools Artifact Layout
+# SwiftRip-Tools Artifact Layout
 
-SwiftRipTools produces finished command-line artifacts for SwiftRip.app.
+SwiftRip-Tools produces finished command-line artifacts for SwiftRip.app.
 
 ## Final artifact output
 
@@ -31,7 +31,7 @@ SwiftRip.app/
 ## Rules
 - SwiftRip release artifacts may be built as separate ARM64 and x86_64 DMGs.
 - SwiftRip.app must not rely on Homebrew, MacPorts, /usr/local/lib, /opt/local/lib, or user-installed HandBrake.
-- SwiftRip.app should consume artifacts produced by SwiftRipTools.
+- SwiftRip.app should consume artifacts produced by SwiftRip-Tools.
 - Tool artifacts should be reproducible.
 - Large generated artifacts should not be committed directly to Git.
 - CI and clean checkouts should restore artifacts from the pinned package for the selected architecture under `Manifest/`.

@@ -32,32 +32,32 @@ done
 
 assert_supported_tools_arch "$TOOLS_ARCH"
 
-echo "SwiftRipTools bootstrap"
+echo "SwiftRip-Tools bootstrap"
 echo "Root:      $ROOT_DIR"
 echo "Artifacts: $ARTIFACTS_DIR"
 echo "Arch:      $TOOLS_ARCH"
 
 if [[ "$FORCE_BUILD" -eq 0 ]] && SWIFTRIP_TOOLS_ARCH="$TOOLS_ARCH" "$SCRIPTS_DIR/verify-swiftrip-tools.zsh"; then
     echo ""
-    echo "Existing SwiftRipTools artifacts are ready."
+    echo "Existing SwiftRip-Tools artifacts are ready."
     exit 0
 fi
 
 if [[ "$FORCE_BUILD" -eq 0 ]]; then
     echo ""
-    echo "Fetching SwiftRipTools artifacts..."
+    echo "Fetching SwiftRip-Tools artifacts..."
     if SWIFTRIP_TOOLS_ARCH="$TOOLS_ARCH" "$SCRIPTS_DIR/fetch-swiftrip-tools.zsh"; then
         echo ""
-        echo "Fetched SwiftRipTools artifacts are ready."
+        echo "Fetched SwiftRip-Tools artifacts are ready."
         exit 0
     fi
 fi
 
 echo ""
-echo "Fetch unavailable; building SwiftRipTools artifacts locally."
+echo "Fetch unavailable; building SwiftRip-Tools artifacts locally."
 
 echo ""
-echo "Building SwiftRipTools artifacts..."
+echo "Building SwiftRip-Tools artifacts..."
 SWIFTRIP_TOOLS_ARCH="$TOOLS_ARCH" "$SCRIPTS_DIR/build-swiftrip-tools.zsh"
 
 echo ""

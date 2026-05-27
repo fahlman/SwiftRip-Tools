@@ -30,7 +30,7 @@ assert_supported_tools_arch "$TOOLS_ARCH"
 
 MANIFEST_FILE="$(manifest_file_for_arch "$TOOLS_DIR" "$TOOLS_ARCH")"
 if [[ ! -f "$MANIFEST_FILE" ]]; then
-    echo "ERROR: Missing SwiftRipTools manifest for $TOOLS_ARCH:"
+    echo "ERROR: Missing SwiftRip-Tools manifest for $TOOLS_ARCH:"
     echo "$MANIFEST_FILE"
     exit 1
 fi
@@ -40,7 +40,7 @@ EXPECTED_SHA256="$(json_value "$MANIFEST_FILE" sha256)"
 PACKAGE_PATH="$PACKAGE_DIR/$ARTIFACT_NAME"
 TAR_PATH="$PACKAGE_DIR/${ARTIFACT_NAME:r}"
 
-echo "SwiftRipTools package"
+echo "SwiftRip-Tools package"
 echo "Root:     $ROOT_DIR"
 echo "Manifest: $MANIFEST_FILE"
 echo "Package:  $PACKAGE_PATH"

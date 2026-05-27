@@ -16,7 +16,7 @@ source "$COMMON_SCRIPT"
 
 assert_supported_tools_arch "$TOOLS_ARCH"
 
-echo "SwiftRipTools: verify artifacts"
+echo "SwiftRip-Tools: verify artifacts"
 echo "Artifacts: $ARTIFACTS_DIR"
 echo "Arch:      $TOOLS_ARCH"
 
@@ -64,4 +64,4 @@ fi
 otool -D "$LIBDVDCSS_ARTIFACT"
 
 echo ""
-echo "SwiftRipTools artifacts verified."
+echo "SwiftRip-Tools artifacts verified."

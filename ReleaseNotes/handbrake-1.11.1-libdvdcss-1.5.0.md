@@ -1,6 +1,6 @@
 # HandBrake 1.11.1 + libdvdcss 1.5.0
 
-SwiftRipTools package set consumed by SwiftRip.app.
+SwiftRip-Tools package set consumed by SwiftRip.app.
 
 ## Components
 
@@ -16,6 +16,6 @@ SwiftRipTools package set consumed by SwiftRip.app.
 
 ## Provenance
 
-The release tag points at the SwiftRipTools source/build scripts used for this package set. The package manifests pin both the release asset URLs and SHA-256 checksums.
+The release tag points at the SwiftRip-Tools source/build scripts used for this package set. The package manifests pin both the release asset URLs and SHA-256 checksums.
 
 SwiftRip verifies the checksums before extracting these artifacts in CI, Xcode Cloud archive builds, and local release packaging.

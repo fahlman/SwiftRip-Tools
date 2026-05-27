@@ -1,22 +1,22 @@
 # Source Offer
 
-SwiftRipTools is free software distributed under the GNU General Public License version 2. See `LICENSE` for the full license text.
+SwiftRip-Tools is free software distributed under the GNU General Public License version 2. See `LICENSE` for the full license text.
 
 This repository provides the source/build workspace for the command-line tools bundled with SwiftRip.app.
 
-## SwiftRipTools Source
+## SwiftRip-Tools Source
 
-The SwiftRipTools source repository is:
+The SwiftRip-Tools source repository is:
 
 ```text
-https://github.com/fahlman/SwiftRipTools
+https://github.com/fahlman/SwiftRip-Tools
 ```
 
 It includes build scripts, package manifests, patch files, and documentation needed to inspect, modify, rebuild, package, and verify the bundled tool artifacts consumed by SwiftRip.
 
 ## Third-Party Source
 
-SwiftRipTools currently builds:
+SwiftRip-Tools currently builds:
 
 - HandBrakeCLI from HandBrake source release `1.11.1`
 - libdvdcss from VideoLAN source release `1.5.0`
@@ -32,7 +32,7 @@ Generated source archives, extracted source trees, build folders, binary artifac
 
 ## Project Patches
 
-SwiftRipTools does not fork HandBrake. App-specific changes are tracked as patch files under:
+SwiftRip-Tools does not fork HandBrake. App-specific changes are tracked as patch files under:
 
 ```text
 Patches/HandBrake/
@@ -76,4 +76,4 @@ The intended approach is to keep the source/build scripts, manifests, patch file
 
 ## No Warranty
 
-SwiftRipTools and its bundled GPL-covered components are provided without warranty. See `LICENSE` for the full GPLv2 warranty disclaimer.
+SwiftRip-Tools and its bundled GPL-covered components are provided without warranty. See `LICENSE` for the full GPLv2 warranty disclaimer.

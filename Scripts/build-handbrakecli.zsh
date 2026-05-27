@@ -24,7 +24,7 @@ ARCH_PREFIX_DIR="$BUILD_DIR/$TOOLS_ARCH-prefix"
 # shellcheck source=/dev/null
 source "$COMMON_SCRIPT"
 
-echo "SwiftRipTools: build HandBrakeCLI"
+echo "SwiftRip-Tools: build HandBrakeCLI"
 echo "Root:      $ROOT_DIR"
 echo "Source:    $SOURCE_DIR"
 echo "Build:     $BUILD_DIR"

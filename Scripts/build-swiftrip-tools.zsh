@@ -14,7 +14,7 @@ source "$COMMON_SCRIPT"
 
 assert_supported_tools_arch "$TOOLS_ARCH"
 
-echo "SwiftRipTools build"
+echo "SwiftRip-Tools build"
 echo "Root:      $ROOT_DIR"
 echo "Tools:     $TOOLS_DIR"
 echo "Scripts:   $SCRIPTS_DIR"
@@ -47,7 +47,7 @@ ls -lh "$ARTIFACTS_DIR"
 SWIFTRIP_TOOLS_ARCH="$TOOLS_ARCH" "$SCRIPTS_DIR/verify-swiftrip-tools.zsh"
 
 echo ""
-echo "SwiftRipTools build complete."
+echo "SwiftRip-Tools build complete."
 
 echo ""
 echo "To create the distributable CI/local bootstrap package, run:"

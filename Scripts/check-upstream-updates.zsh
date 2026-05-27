@@ -95,7 +95,7 @@ fi
 cat > "$ISSUE_BODY_PATH" <<EOF
 # Upstream tool updates
 
-SwiftRipTools found upstream component versions that should be reviewed.
+SwiftRip-Tools found upstream component versions that should be reviewed.
 
 | Component | Current | Latest | Update available |
 | --- | --- | --- | --- |
@@ -107,7 +107,7 @@ SwiftRipTools found upstream component versions that should be reviewed.
 - Update the pinned version and SHA-256 in the matching build script.
 - Rebuild and verify the Apple Silicon package.
 - Rebuild and verify the Intel package.
-- Publish replacement SwiftRipTools release assets.
+- Publish replacement SwiftRip-Tools release assets.
 - Update SwiftRip's tool manifests to the new release tag and checksums.
 - Run the signed, sandboxed SwiftRip smoke test with a real DVD.
 EOF
@@ -125,7 +125,7 @@ fi
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     {
         print -r -- "update_available=$update_available"
-        print -r -- "issue_title=Update SwiftRipTools upstream components"
+        print -r -- "issue_title=Update SwiftRip-Tools upstream components"
         print -r -- "issue_body_path=$ISSUE_BODY_PATH"
     } >> "$GITHUB_OUTPUT"
 fi

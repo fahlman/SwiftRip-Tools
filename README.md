@@ -1,6 +1,6 @@
-# SwiftRipTools
+# SwiftRip-Tools
 
-SwiftRipTools is the separate build/package workspace for the command-line tools used by SwiftRip.app.
+SwiftRip-Tools is the separate build/package workspace for the command-line tools used by SwiftRip.app.
 
 Its job is to produce known-good, signed, app-bundled artifacts such as:
 
@@ -15,7 +15,7 @@ SwiftRip.app should consume finished artifacts from this workspace rather than r
 The current package set is published from:
 
 ```text
-https://github.com/fahlman/SwiftRipTools/releases/tag/handbrake-1.11.1-libdvdcss-1.5.0
+https://github.com/fahlman/SwiftRip-Tools/releases/tag/handbrake-1.11.1-libdvdcss-1.5.0
 ```
 
 It contains:
@@ -89,7 +89,7 @@ HandBrake and libdvdcss releases are monitored by:
 Scripts/check-upstream-updates.zsh
 ```
 
-The `Upstream Updates` GitHub Actions workflow runs that check every Monday and can also be started manually. When either upstream version is newer than the pinned SwiftRipTools version, the workflow opens or updates a GitHub issue with the version table and release checklist. SwiftRipTools still keeps app-specific HandBrake changes as local patches instead of maintaining a long-lived HandBrake fork.
+The `Upstream Updates` GitHub Actions workflow runs that check every Monday and can also be started manually. When either upstream version is newer than the pinned SwiftRip-Tools version, the workflow opens or updates a GitHub issue with the version table and release checklist. SwiftRip-Tools still keeps app-specific HandBrake changes as local patches instead of maintaining a long-lived HandBrake fork.
 
 ## Packaging
 
@@ -117,7 +117,7 @@ For Intel, pass `--arch x86_64`.
 
 ## Source and licenses
 
-- `LICENSE` covers SwiftRipTools under GPLv2.
+- `LICENSE` covers SwiftRip-Tools under GPLv2.
 - `SOURCE_OFFER.md` describes source availability and rebuild steps.
 - `THIRD_PARTY_NOTICES.md` lists the major upstream components and their licenses.
 

@@ -41,10 +41,10 @@ echo "Checking manifest release host..."
 while IFS= read -r manifest_path; do
     manifest_url="$(/usr/bin/plutil -extract url raw -o - "$ROOT_DIR/$manifest_path")"
     case "$manifest_url" in
-        https://github.com/fahlman/SwiftRipTools/releases/download/*)
+        https://github.com/fahlman/SwiftRip-Tools/releases/download/*)
             ;;
         *)
-            echo "ERROR: Manifest URL must point at fahlman/SwiftRipTools release assets:"
+            echo "ERROR: Manifest URL must point at fahlman/SwiftRip-Tools release assets:"
             echo "$manifest_path: $manifest_url"
             exit 1
             ;;
@@ -53,4 +53,4 @@ done < <(
     git -C "$ROOT_DIR" ls-files 'Manifest/*.json'
 )
 
-echo "SwiftRipTools repository validation passed."
+echo "SwiftRip-Tools repository validation passed."
