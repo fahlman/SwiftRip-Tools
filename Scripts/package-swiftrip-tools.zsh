@@ -54,7 +54,10 @@ rm -f "$TAR_PATH"
 
 echo ""
 echo "Creating package..."
-COPYFILE_DISABLE=1 tar -cf "$TAR_PATH" -C "$ARTIFACTS_ROOT" "macos-$TOOLS_ARCH"
+COPYFILE_DISABLE=1 tar -cf "$TAR_PATH" \
+    -C "$ARTIFACTS_ROOT" \
+    "macos-$TOOLS_ARCH/HandBrakeCLI" \
+    "macos-$TOOLS_ARCH/libdvdcss.2.dylib"
 gzip -n "$TAR_PATH"
 
 ACTUAL_SHA256="$(sha256_file "$PACKAGE_PATH")"

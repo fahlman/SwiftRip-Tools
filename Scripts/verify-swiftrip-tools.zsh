@@ -23,6 +23,19 @@ echo "Arch:      $TOOLS_ARCH"
 require_executable "$HANDBRAKE_ARTIFACT"
 require_file "$LIBDVDCSS_ARTIFACT" "libdvdcss.2.dylib artifact"
 
+UNEXPECTED_ARTIFACTS="$(
+    find "$ARTIFACTS_DIR" \
+        -mindepth 1 \
+        -maxdepth 1 \
+        ! -name HandBrakeCLI \
+        ! -name libdvdcss.2.dylib
+)"
+if [[ -n "$UNEXPECTED_ARTIFACTS" ]]; then
+    echo "ERROR: Unexpected SwiftRip-Tools artifact files:"
+    echo "$UNEXPECTED_ARTIFACTS"
+    exit 1
+fi
+
 echo ""
 echo "HandBrakeCLI:"
 file "$HANDBRAKE_ARTIFACT"
