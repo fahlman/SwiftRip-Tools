@@ -18,7 +18,7 @@ It includes build scripts, package manifests, source provenance, and documentati
 
 SwiftRip-Tools currently builds:
 
-- HandBrakeCLI from the SwiftRip-HandBrake fork tag `swiftrip-handbrake-1.11.1`
+- HandBrakeCLI from the SwiftRip-HandBrake fork tag `swiftrip-handbrake-1.11.2`
 - libdvdcss from the SwiftRip-libdvdcss source tag `swiftrip-libdvdcss-1.5.0`
 
 The exact upstream URLs, SwiftRip source tags, and commit pins are recorded in:
@@ -35,7 +35,7 @@ Generated source checkouts, build folders, binary artifacts, and package tarball
 SwiftRip's app-specific HandBrake change is tracked in:
 
 ```text
-https://github.com/fahlman/SwiftRip-HandBrake/tree/swiftrip-handbrake-1.11.1
+https://github.com/fahlman/SwiftRip-HandBrake/tree/swiftrip-handbrake-1.11.2
 ```
 
 That tag is pinned by commit hash in `Scripts/build-handbrakecli.zsh`. The fork patch adjusts HandBrake's libdvdread contribution so the bundled `HandBrakeCLI` can load `libdvdcss.2.dylib` from SwiftRip.app's `Contents/Frameworks` directory instead of relying on `/usr/local/lib`.

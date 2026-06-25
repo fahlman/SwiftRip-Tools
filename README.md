@@ -15,12 +15,12 @@ SwiftRip.app should consume finished artifacts from this workspace rather than r
 The current package set is published from:
 
 ```text
-https://github.com/fahlman/SwiftRip-Tools/releases/tag/handbrake-1.11.1-libdvdcss-1.5.0
+https://github.com/fahlman/SwiftRip-Tools/releases/tag/handbrake-1.11.2-libdvdcss-1.5.0
 ```
 
 It contains:
 
-- HandBrakeCLI 1.11.1
+- HandBrakeCLI 1.11.2
 - libdvdcss 1.5.0
 - Apple Silicon and Intel package tarballs pinned by SHA-256 in `Manifest/`
 
@@ -54,10 +54,10 @@ Scripts/bootstrap-tools.zsh --force
 SwiftRip builds HandBrakeCLI from this pinned fork tag:
 
 ```text
-https://github.com/fahlman/SwiftRip-HandBrake/tree/swiftrip-handbrake-1.11.1
+https://github.com/fahlman/SwiftRip-HandBrake/tree/swiftrip-handbrake-1.11.2
 ```
 
-That tag starts from upstream HandBrake 1.11.1 and contains SwiftRip's app-specific `libdvdread` patch. The patch makes HandBrake load `libdvdcss.2.dylib` from:
+That tag starts from upstream HandBrake 1.11.2 and contains SwiftRip's app-specific `libdvdread` patch. The patch makes HandBrake load `libdvdcss.2.dylib` from:
 
 ```text
 @executable_path/../Frameworks/libdvdcss.2.dylib
