@@ -14,6 +14,32 @@ HANDBRAKE_VERSION="1.11.2"
 HANDBRAKE_REPOSITORY_URL="https://github.com/fahlman/SwiftRip-HandBrake.git"
 HANDBRAKE_SWIFTRIP_TAG="swiftrip-handbrake-${HANDBRAKE_VERSION}"
 HANDBRAKE_SWIFTRIP_COMMIT="e1ac9de2cf1aa24c2b8a651b13735c21335a1229"
+
+PINNED_HANDBRAKE_VERSION="$HANDBRAKE_VERSION"
+PINNED_HANDBRAKE_REPOSITORY_URL="$HANDBRAKE_REPOSITORY_URL"
+PINNED_HANDBRAKE_SWIFTRIP_TAG="$HANDBRAKE_SWIFTRIP_TAG"
+PINNED_HANDBRAKE_SWIFTRIP_COMMIT="$HANDBRAKE_SWIFTRIP_COMMIT"
+
+if [[ -n "${SWIFTRIP_HANDBRAKE_VERSION:-}" ]]; then
+    HANDBRAKE_VERSION="$SWIFTRIP_HANDBRAKE_VERSION"
+    HANDBRAKE_SWIFTRIP_TAG="swiftrip-handbrake-${HANDBRAKE_VERSION}"
+fi
+if [[ -n "${SWIFTRIP_HANDBRAKE_REPOSITORY_URL:-}" ]]; then
+    HANDBRAKE_REPOSITORY_URL="$SWIFTRIP_HANDBRAKE_REPOSITORY_URL"
+fi
+if [[ -n "${SWIFTRIP_HANDBRAKE_SWIFTRIP_TAG:-}" ]]; then
+    HANDBRAKE_SWIFTRIP_TAG="$SWIFTRIP_HANDBRAKE_SWIFTRIP_TAG"
+fi
+if [[ -n "${SWIFTRIP_HANDBRAKE_SWIFTRIP_COMMIT:-}" ]]; then
+    HANDBRAKE_SWIFTRIP_COMMIT="$SWIFTRIP_HANDBRAKE_SWIFTRIP_COMMIT"
+elif [[ "$HANDBRAKE_VERSION" != "$PINNED_HANDBRAKE_VERSION" ||
+        "$HANDBRAKE_REPOSITORY_URL" != "$PINNED_HANDBRAKE_REPOSITORY_URL" ||
+        "$HANDBRAKE_SWIFTRIP_TAG" != "$PINNED_HANDBRAKE_SWIFTRIP_TAG" ]]; then
+    echo "ERROR: HandBrake override builds must provide SWIFTRIP_HANDBRAKE_SWIFTRIP_COMMIT." >&2
+    echo "This keeps non-pinned preparation builds tied to an explicit fork revision." >&2
+    exit 1
+fi
+
 HANDBRAKE_SOURCE_DIR="$SOURCE_DIR/HandBrake-${HANDBRAKE_VERSION}-swiftrip"
 LIBDVDREAD_PATCH="$HANDBRAKE_SOURCE_DIR/contrib/libdvdread/A03-macOS-hardened-runtime-dlopen.patch"
 
@@ -98,7 +124,7 @@ env -u CPATH \
     -u CXXFLAGS \
     -u LDFLAGS \
     PKG_CONFIG_LIBDIR="$ARCH_BUILD_DIR/contrib/lib/pkgconfig" \
-    PATH="/opt/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+    PATH="${SWIFTRIP_BUILD_TOOL_PATH:-/opt/homebrew/bin:/usr/local/bin:/opt/local/bin:/usr/bin:/bin:/usr/sbin:/sbin}" \
     ./configure \
       --force \
       --disable-xcode \
@@ -128,9 +154,9 @@ echo "Runtime library check:"
 otool -L "$ARTIFACTS_DIR/HandBrakeCLI"
 
 echo ""
-echo "Checking for accidental MacPorts runtime dependencies..."
-if otool -L "$ARTIFACTS_DIR/HandBrakeCLI" | grep -q "/opt/local"; then
-    echo "ERROR: HandBrakeCLI links against /opt/local libraries."
+echo "Checking for accidental package-manager runtime dependencies..."
+if otool -L "$ARTIFACTS_DIR/HandBrakeCLI" | grep -Eq "(/opt/local|/opt/homebrew|/usr/local)"; then
+    echo "ERROR: HandBrakeCLI links against package-manager libraries."
     exit 1
 fi
 
@@ -144,6 +170,6 @@ if grep -aFq "/usr/local/lib/libdvdcss.2.dylib" "$ARTIFACTS_DIR/HandBrakeCLI"; t
     exit 1
 fi
 
-echo "No /opt/local runtime dependencies found."
+echo "No package-manager runtime dependencies found."
 echo ""
 echo "HandBrakeCLI build complete."

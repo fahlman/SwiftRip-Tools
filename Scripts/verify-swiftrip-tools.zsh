@@ -44,8 +44,8 @@ if ! file "$HANDBRAKE_ARTIFACT" | grep -q "$TOOLS_ARCH"; then
     exit 1
 fi
 
-if otool -L "$HANDBRAKE_ARTIFACT" | grep -q "/opt/local"; then
-    echo "ERROR: HandBrakeCLI links against /opt/local libraries."
+if otool -L "$HANDBRAKE_ARTIFACT" | grep -Eq "(/opt/local|/opt/homebrew|/usr/local)"; then
+    echo "ERROR: HandBrakeCLI links against package-manager libraries."
     exit 1
 fi
 
@@ -69,8 +69,8 @@ if ! file "$LIBDVDCSS_ARTIFACT" | grep -q "$TOOLS_ARCH"; then
     exit 1
 fi
 
-if otool -L "$LIBDVDCSS_ARTIFACT" | grep -q "/opt/local"; then
-    echo "ERROR: libdvdcss.2.dylib links against /opt/local libraries."
+if otool -L "$LIBDVDCSS_ARTIFACT" | grep -Eq "(/opt/local|/opt/homebrew|/usr/local)"; then
+    echo "ERROR: libdvdcss.2.dylib links against package-manager libraries."
     exit 1
 fi
 

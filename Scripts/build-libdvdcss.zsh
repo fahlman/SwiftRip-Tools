@@ -158,12 +158,12 @@ file "$ARTIFACT_DYLIB"
 otool -D "$ARTIFACT_DYLIB"
 
 echo ""
-echo "Checking for accidental MacPorts runtime dependencies..."
-if otool -L "$ARTIFACT_DYLIB" | grep -q "/opt/local"; then
-    echo "ERROR: libdvdcss.2.dylib links against /opt/local libraries."
+echo "Checking for accidental package-manager runtime dependencies..."
+if otool -L "$ARTIFACT_DYLIB" | grep -Eq "(/opt/local|/opt/homebrew|/usr/local)"; then
+    echo "ERROR: libdvdcss.2.dylib links against package-manager libraries."
     exit 1
 fi
 
-echo "No /opt/local runtime dependencies found."
+echo "No package-manager runtime dependencies found."
 echo ""
 echo "libdvdcss build complete."

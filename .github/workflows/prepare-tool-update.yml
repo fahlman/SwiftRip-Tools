@@ -1,0 +1,53 @@
+name: Prepare Tool Update
+
+on:
+  workflow_dispatch:
+    inputs:
+      handbrake_version:
+        description: "HandBrake version to prepare, for example 1.11.2"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    name: Build Candidate Tool Packages
+    runs-on: macos-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Install build dependencies
+        run: |
+          brew update
+          brew install autoconf automake cmake libtool meson nasm ninja pkg-config yasm
+
+      - name: Validate repository
+        run: Scripts/validate-repo.zsh
+
+      - name: Prepare candidate packages
+        run: |
+          Scripts/prepare-tool-update.zsh \
+            --handbrake-version "${{ inputs.handbrake_version }}" \
+            --output-dir PreparedToolUpdate
+
+      - name: Write job summary
+        if: always()
+        run: |
+          if [[ -f PreparedToolUpdate/summary.md ]]; then
+            cat PreparedToolUpdate/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload prepared update artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: swiftrip-tools-handbrake-${{ inputs.handbrake_version }}-prepared
+          path: PreparedToolUpdate/**
+          if-no-files-found: error

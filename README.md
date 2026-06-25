@@ -107,6 +107,8 @@ Scripts/check-upstream-updates.zsh
 
 The `Upstream Updates` GitHub Actions workflow runs that check every Monday and can also be started manually. When either upstream version is newer than the pinned SwiftRip-Tools version, the workflow opens or updates a GitHub issue with the version table and release checklist.
 
+After the SwiftRip-HandBrake fork tag exists for a new HandBrake release, run the manual `Prepare Tool Update` GitHub Actions workflow with that HandBrake version. It builds and verifies both Apple Silicon and Intel packages, uploads the candidate tarballs, generated manifests, manifest diff, checksums, and release notes as workflow artifacts, and stops before publishing release assets.
+
 ## Packaging
 
 After a successful local rebuild, create the downloadable tool package with:
