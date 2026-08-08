@@ -16,6 +16,36 @@ require_command() {
     fi
 }
 
+videolan_git() {
+    GIT_TERMINAL_PROMPT=0 git \
+        -c http.connectTimeout=20 \
+        -c http.lowSpeedLimit=1 \
+        -c http.lowSpeedTime=20 \
+        "$@"
+}
+
+videolan_git_retry() {
+    local attempt
+    local delay
+    local output
+
+    for attempt in 1 2 3; do
+        if output="$(videolan_git "$@")"; then
+            print -r -- "$output"
+            return 0
+        fi
+
+        if (( attempt < 3 )); then
+            delay=$((attempt * 5))
+            echo "VideoLAN Git request failed; retrying in ${delay}s (attempt $((attempt + 1))/3)." >&2
+            sleep "$delay"
+        fi
+    done
+
+    echo "ERROR: VideoLAN Git request failed after 3 attempts." >&2
+    return 1
+}
+
 require_file() {
     local file_path="$1"
     local label="${2:-file}"
