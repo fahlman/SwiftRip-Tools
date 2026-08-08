@@ -15,13 +15,13 @@ SwiftRip.app should consume finished artifacts from this workspace rather than r
 The current package set is published from:
 
 ```text
-https://github.com/fahlman/SwiftRip-Tools/releases/tag/handbrake-1.11.2-libdvdcss-1.5.0
+https://github.com/fahlman/SwiftRip-Tools/releases/tag/handbrake-1.11.2-libdvdcss-1.6.0
 ```
 
 It contains:
 
 - HandBrakeCLI 1.11.2
-- libdvdcss 1.5.0
+- libdvdcss 1.6.0
 - Apple Silicon and Intel package tarballs pinned by SHA-256 in `Manifest/`
 
 ## Contributor bootstrap
@@ -70,13 +70,13 @@ That matches SwiftRip.app's bundle layout and avoids relying on `/usr/local/lib`
 SwiftRip builds libdvdcss from this pinned source tag:
 
 ```text
-https://github.com/fahlman/SwiftRip-libdvdcss/tree/swiftrip-libdvdcss-1.5.0
+https://github.com/fahlman/SwiftRip-libdvdcss/tree/swiftrip-libdvdcss-1.6.0
 ```
 
-That tag points at VideoLAN's upstream libdvdcss 1.5.0 commit:
+That tag points at VideoLAN's upstream libdvdcss 1.6.0 commit:
 
 ```text
-c838ca97553aeb8505b7baf02b9a90f8505de212
+9de0528e142d6dd31c4d198130d4a48ff3397d2b
 ```
 
 The build script verifies that exact commit before building `libdvdcss.2.dylib`.

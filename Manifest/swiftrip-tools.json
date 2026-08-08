@@ -1,6 +1,6 @@
 {
-  "version": "handbrake-1.11.2-libdvdcss-1.5.0",
-  "artifactName": "swiftrip-tools-macos-arm64-handbrake-1.11.2-libdvdcss-1.5.0.tar.gz",
-  "url": "https://github.com/fahlman/SwiftRip-Tools/releases/download/handbrake-1.11.2-libdvdcss-1.5.0/swiftrip-tools-macos-arm64-handbrake-1.11.2-libdvdcss-1.5.0.tar.gz",
-  "sha256": "bb1a1f799b63c85824819d9edfd93ed30254cc77f127dfdbfdd64eb496947237"
+  "version": "handbrake-1.11.2-libdvdcss-1.6.0",
+  "artifactName": "swiftrip-tools-macos-arm64-handbrake-1.11.2-libdvdcss-1.6.0.tar.gz",
+  "url": "https://github.com/fahlman/SwiftRip-Tools/releases/download/handbrake-1.11.2-libdvdcss-1.6.0/swiftrip-tools-macos-arm64-handbrake-1.11.2-libdvdcss-1.6.0.tar.gz",
+  "sha256": "04c42c73650dc0baafd79e2938e49276625674d114d763ba4fd70b9c02ea4c56"
 }
