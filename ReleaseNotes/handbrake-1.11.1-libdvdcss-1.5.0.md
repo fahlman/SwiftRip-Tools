@@ -18,4 +18,4 @@ SwiftRip-Tools package set consumed by SwiftRip.app.
 
 The release tag points at the SwiftRip-Tools source/build scripts used for this package set. The package manifests pin both the release asset URLs and SHA-256 checksums.
 
-SwiftRip verifies the checksums before extracting these artifacts in CI, Xcode Cloud archive builds, and local release packaging.
+SwiftRip verifies the checksums before extracting these artifacts in CI and local release packaging.

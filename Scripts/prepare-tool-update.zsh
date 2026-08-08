@@ -8,9 +8,11 @@ HANDBRAKE_SCRIPT="$SCRIPT_DIR/build-handbrakecli.zsh"
 LIBDVDCSS_SCRIPT="$SCRIPT_DIR/build-libdvdcss.zsh"
 OUTPUT_DIR="$ROOT_DIR/PreparedToolUpdate"
 HANDBRAKE_VERSION_INPUT=""
+LIBDVDCSS_VERSION_INPUT=""
 TOOLS_REPOSITORY="${SWIFTRIP_TOOLS_REPOSITORY:-fahlman/SwiftRip-Tools}"
 HANDBRAKE_UPSTREAM_REPOSITORY_URL="${SWIFTRIP_HANDBRAKE_UPSTREAM_REPOSITORY_URL:-https://github.com/HandBrake/HandBrake.git}"
 HANDBRAKE_SWIFTRIP_REPOSITORY_URL="${SWIFTRIP_HANDBRAKE_REPOSITORY_URL:-https://github.com/fahlman/SwiftRip-HandBrake.git}"
+LIBDVDCSS_SWIFTRIP_REPOSITORY_URL="${SWIFTRIP_LIBDVDCSS_REPOSITORY_URL:-https://github.com/fahlman/SwiftRip-libdvdcss.git}"
 SHA_PLACEHOLDER="PREPARE_TOOL_UPDATE_SHA_PLACEHOLDER"
 
 # shellcheck source=/dev/null
@@ -18,14 +20,14 @@ source "$COMMON_SCRIPT"
 
 usage() {
     cat <<EOF
-Usage: $0 --handbrake-version VERSION [--output-dir PATH]
+Usage: $0 --handbrake-version VERSION --libdvdcss-version VERSION [--output-dir PATH]
 
-Builds and packages a proposed SwiftRip-Tools HandBrake update for both arm64
-and x86_64. The script verifies that the matching SwiftRip-HandBrake fork tag
-exists, builds from that exact fork commit, generates package checksums,
-release notes, candidate manifests, and a manifest diff.
+Builds and packages a proposed SwiftRip-Tools update for both arm64 and
+x86_64. The script verifies that matching SwiftRip source tags exist, builds
+from those exact commits, generates package checksums, release notes,
+candidate manifests, and a manifest diff.
 
-This script does not publish GitHub release assets and does not edit SwiftRip.
+This script does not publish GitHub release assets or edit SwiftRip.
 EOF
 }
 
@@ -89,6 +91,10 @@ while [[ $# -gt 0 ]]; do
             HANDBRAKE_VERSION_INPUT="${2:-}"
             shift 2
             ;;
+        --libdvdcss-version)
+            LIBDVDCSS_VERSION_INPUT="${2:-}"
+            shift 2
+            ;;
         --output-dir)
             OUTPUT_DIR="${2:-}"
             shift 2
@@ -104,7 +110,6 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-require_value "handbrake version" "$HANDBRAKE_VERSION_INPUT"
 require_value "output directory" "$OUTPUT_DIR"
 require_command git
 require_command curl
@@ -121,15 +126,27 @@ case "$OUTPUT_DIR" in
         ;;
 esac
 
+if [[ -z "$HANDBRAKE_VERSION_INPUT" ]]; then
+    HANDBRAKE_VERSION_INPUT="$(read_assignment "$HANDBRAKE_SCRIPT" "HANDBRAKE_VERSION")"
+fi
+if [[ -z "$LIBDVDCSS_VERSION_INPUT" ]]; then
+    LIBDVDCSS_VERSION_INPUT="$(read_assignment "$LIBDVDCSS_SCRIPT" "LIBDVDCSS_VERSION")"
+fi
+
 HANDBRAKE_VERSION="${HANDBRAKE_VERSION_INPUT#v}"
+LIBDVDCSS_VERSION="${LIBDVDCSS_VERSION_INPUT#v}"
+require_value "handbrake version" "$HANDBRAKE_VERSION"
+require_value "libdvdcss version" "$LIBDVDCSS_VERSION"
 if [[ ! "$HANDBRAKE_VERSION" =~ '^[0-9]+(\.[0-9]+){1,3}$' ]]; then
     echo "ERROR: HandBrake version must look like 1.11.2." >&2
     exit 64
 fi
+if [[ ! "$LIBDVDCSS_VERSION" =~ '^[0-9]+(\.[0-9]+){1,3}$' ]]; then
+    echo "ERROR: libdvdcss version must look like 1.5.0." >&2
+    exit 64
+fi
 
-LIBDVDCSS_VERSION="$(read_assignment "$LIBDVDCSS_SCRIPT" "LIBDVDCSS_VERSION")"
-LIBDVDCSS_SWIFTRIP_TAG="$(read_assignment "$LIBDVDCSS_SCRIPT" "LIBDVDCSS_SWIFTRIP_TAG")"
-LIBDVDCSS_SWIFTRIP_COMMIT="$(read_assignment "$LIBDVDCSS_SCRIPT" "LIBDVDCSS_SWIFTRIP_COMMIT")"
+LIBDVDCSS_SWIFTRIP_TAG="swiftrip-libdvdcss-${LIBDVDCSS_VERSION}"
 HANDBRAKE_SWIFTRIP_TAG="swiftrip-handbrake-${HANDBRAKE_VERSION}"
 PACKAGE_VERSION="handbrake-${HANDBRAKE_VERSION}-libdvdcss-${LIBDVDCSS_VERSION}"
 RELEASE_TAG="$PACKAGE_VERSION"
@@ -143,11 +160,20 @@ echo "HandBrake fork:   $HANDBRAKE_SWIFTRIP_TAG"
 echo "libdvdcss:        $LIBDVDCSS_VERSION"
 echo "Release tag:      $RELEASE_TAG"
 
-if ! git ls-remote --exit-code --tags "$HANDBRAKE_UPSTREAM_REPOSITORY_URL" "refs/tags/${HANDBRAKE_VERSION}" >/dev/null 2>&1; then
-    echo "ERROR: Upstream HandBrake tag was not found: $HANDBRAKE_VERSION" >&2
+HANDBRAKE_UPSTREAM_TAG=""
+for candidate_tag in "$HANDBRAKE_VERSION" "v$HANDBRAKE_VERSION" "v_${HANDBRAKE_VERSION//./_}"; do
+    if git ls-remote --exit-code --tags "$HANDBRAKE_UPSTREAM_REPOSITORY_URL" \
+        "refs/tags/${candidate_tag}" "refs/tags/${candidate_tag}^{}" >/dev/null 2>&1; then
+        HANDBRAKE_UPSTREAM_TAG="$candidate_tag"
+        break
+    fi
+done
+if [[ -z "$HANDBRAKE_UPSTREAM_TAG" ]]; then
+    echo "ERROR: Upstream HandBrake tag was not found for version: $HANDBRAKE_VERSION" >&2
     echo "Repository: $HANDBRAKE_UPSTREAM_REPOSITORY_URL" >&2
     exit 1
 fi
+echo "HandBrake upstream tag: $HANDBRAKE_UPSTREAM_TAG"
 
 HANDBRAKE_SWIFTRIP_COMMIT="$(resolve_tag_commit "$HANDBRAKE_SWIFTRIP_REPOSITORY_URL" "$HANDBRAKE_SWIFTRIP_TAG")"
 if [[ -z "$HANDBRAKE_SWIFTRIP_COMMIT" ]]; then
@@ -157,6 +183,15 @@ if [[ -z "$HANDBRAKE_SWIFTRIP_COMMIT" ]]; then
 fi
 
 echo "HandBrake fork commit: $HANDBRAKE_SWIFTRIP_COMMIT"
+
+LIBDVDCSS_SWIFTRIP_COMMIT="$(resolve_tag_commit "$LIBDVDCSS_SWIFTRIP_REPOSITORY_URL" "$LIBDVDCSS_SWIFTRIP_TAG")"
+if [[ -z "$LIBDVDCSS_SWIFTRIP_COMMIT" ]]; then
+    echo "ERROR: SwiftRip-libdvdcss source tag was not found: $LIBDVDCSS_SWIFTRIP_TAG" >&2
+    echo "Create and push that source tag before preparing SwiftRip-Tools packages." >&2
+    exit 1
+fi
+
+echo "libdvdcss fork commit: $LIBDVDCSS_SWIFTRIP_COMMIT"
 
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR/Manifest" "$OUTPUT_DIR/Packages" "$OUTPUT_DIR/ReleaseNotes"
@@ -180,6 +215,10 @@ for arch in arm64 x86_64; do
     SWIFTRIP_HANDBRAKE_REPOSITORY_URL="$HANDBRAKE_SWIFTRIP_REPOSITORY_URL" \
     SWIFTRIP_HANDBRAKE_SWIFTRIP_TAG="$HANDBRAKE_SWIFTRIP_TAG" \
     SWIFTRIP_HANDBRAKE_SWIFTRIP_COMMIT="$HANDBRAKE_SWIFTRIP_COMMIT" \
+    SWIFTRIP_LIBDVDCSS_VERSION="$LIBDVDCSS_VERSION" \
+    SWIFTRIP_LIBDVDCSS_REPOSITORY_URL="$LIBDVDCSS_SWIFTRIP_REPOSITORY_URL" \
+    SWIFTRIP_LIBDVDCSS_SWIFTRIP_TAG="$LIBDVDCSS_SWIFTRIP_TAG" \
+    SWIFTRIP_LIBDVDCSS_SWIFTRIP_COMMIT="$LIBDVDCSS_SWIFTRIP_COMMIT" \
     SWIFTRIP_TOOLS_ARCH="$arch" \
         "$SCRIPT_DIR/build-swiftrip-tools.zsh"
 
@@ -240,7 +279,7 @@ Prepared SwiftRip-Tools package set for SwiftRip.app.
 - SwiftRip libdvdcss source tag: \`${LIBDVDCSS_SWIFTRIP_TAG}\`
 - SwiftRip libdvdcss pinned commit: \`${LIBDVDCSS_SWIFTRIP_COMMIT}\`
 
-The generated manifests pin the candidate release asset URLs and SHA-256 checksums. Review the fork patch and package output before publishing these assets.
+The generated manifests pin the candidate release asset URLs and SHA-256 checksums. The automated workflow publishes these assets after the build and verification steps succeed.
 EOF
 
 diff -u "$ROOT_DIR/Manifest/swiftrip-tools.json" "$OUTPUT_DIR/Manifest/swiftrip-tools.json" > "$OUTPUT_DIR/manifest.diff" || true
@@ -256,6 +295,8 @@ cat > "$summary_path" <<EOF
 - HandBrake fork tag: \`${HANDBRAKE_SWIFTRIP_TAG}\`
 - HandBrake fork commit: \`${HANDBRAKE_SWIFTRIP_COMMIT}\`
 - libdvdcss: ${LIBDVDCSS_VERSION}
+- libdvdcss source tag: \`${LIBDVDCSS_SWIFTRIP_TAG}\`
+- libdvdcss source commit: \`${LIBDVDCSS_SWIFTRIP_COMMIT}\`
 - Candidate release tag: \`${RELEASE_TAG}\`
 
 ## Packages
@@ -273,12 +314,11 @@ cat > "$summary_path" <<EOF
 - \`manifest.diff\`
 - Candidate package tarballs under \`Packages/\`
 
-## Human Review Before Publishing
+## Automated Release Flow
 
-- Confirm the SwiftRip-HandBrake patch still loads \`@executable_path/../Frameworks/libdvdcss.2.dylib\`.
-- Publish the candidate package tarballs to the \`${RELEASE_TAG}\` GitHub release only after review.
-- Apply the generated manifests to SwiftRip-Tools and SwiftRip after publishing.
-- Fetch both packages from SwiftRip and rerun \`BundleIntegrityTests\`.
+The automatic upstream workflow publishes the candidate package release,
+commits the generated manifests and source pins to SwiftRip-Tools, and sends
+the exact tool revision to SwiftRip for its next release tag.
 EOF
 
 echo ""

@@ -95,23 +95,24 @@ fi
 cat > "$ISSUE_BODY_PATH" <<EOF
 # Upstream tool updates
 
-SwiftRip-Tools found upstream component versions that should be reviewed.
+SwiftRip-Tools found upstream component versions that will be processed by the
+automatic update workflow.
 
 | Component | Current | Latest | Update available |
 | --- | --- | --- | --- |
 | HandBrake | $current_handbrake_version | $latest_handbrake_version | $handbrake_update |
 | libdvdcss | $current_libdvdcss_version | $latest_libdvdcss_version | $libdvdcss_update |
 
-## Review checklist
+## Automatic flow
 
-- Update the pinned version or commit in the matching build script.
-- Sync the SwiftRip-HandBrake fork and create a new pinned fork tag if HandBrake changed.
-- Sync the SwiftRip-libdvdcss source repo and create a new pinned source tag if libdvdcss changed.
-- Rebuild and verify the Apple Silicon package.
-- Rebuild and verify the Intel package.
-- Publish replacement SwiftRip-Tools release assets.
-- Update SwiftRip's tool manifests to the new release tag and checksums.
-- Run the signed, sandboxed SwiftRip smoke test with a real DVD.
+When the update workflow succeeds it will:
+
+- Create the matching SwiftRip-HandBrake source tag with the app-bundle patch.
+- Create the matching SwiftRip-libdvdcss source tag.
+- Build and verify Apple Silicon and Intel packages.
+- Publish the SwiftRip-Tools release assets.
+- Update SwiftRip's manifests and provenance.
+- Create a new SwiftRip version tag for the GitHub release workflow.
 EOF
 
 echo ""
@@ -127,6 +128,10 @@ fi
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     {
         print -r -- "update_available=$update_available"
+        print -r -- "current_handbrake_version=$current_handbrake_version"
+        print -r -- "latest_handbrake_version=$latest_handbrake_version"
+        print -r -- "current_libdvdcss_version=$current_libdvdcss_version"
+        print -r -- "latest_libdvdcss_version=$latest_libdvdcss_version"
         print -r -- "issue_title=Update SwiftRip-Tools upstream components"
         print -r -- "issue_body_path=$ISSUE_BODY_PATH"
     } >> "$GITHUB_OUTPUT"

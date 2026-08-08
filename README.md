@@ -105,9 +105,7 @@ HandBrake and libdvdcss releases are monitored by:
 Scripts/check-upstream-updates.zsh
 ```
 
-The `Upstream Updates` GitHub Actions workflow runs that check every Monday and can also be started manually. When either upstream version is newer than the pinned SwiftRip-Tools version, the workflow opens or updates a GitHub issue with the version table and release checklist.
-
-After the SwiftRip-HandBrake fork tag exists for a new HandBrake release, run the manual `Prepare Tool Update` GitHub Actions workflow with that HandBrake version. It builds and verifies both Apple Silicon and Intel packages, uploads the candidate tarballs, generated manifests, manifest diff, checksums, and release notes as workflow artifacts, and stops before publishing release assets.
+The `Upstream Updates` GitHub Actions workflow runs that check every Monday and can also be started manually. When either upstream version is newer than the pinned SwiftRip-Tools version, it creates the matching source tags, applies the single HandBrake app-bundle patch, builds and verifies both Apple Silicon and Intel packages, publishes the SwiftRip-Tools release, updates the repository pins, and dispatches the exact tool revision to SwiftRip.
 
 ## Packaging
 
@@ -141,4 +139,4 @@ For Intel, pass `--arch x86_64`.
 
 ## SwiftRip integration
 
-SwiftRip.app keeps a small fetch script and manifest copy in its own repository so Xcode Cloud can restore the pinned packages during archive builds. This repository owns the source/build/package/publish workflow and the release assets referenced by those manifests.
+SwiftRip.app keeps a small fetch script and manifest copy in its own repository so GitHub Actions can restore the pinned packages during release builds. This repository owns the source/build/package/publish workflow and the release assets referenced by those manifests.

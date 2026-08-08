@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 jobs:
@@ -24,23 +24,77 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: Scripts/check-upstream-updates.zsh
 
+    outputs:
+      update_available: ${{ steps.check.outputs.update_available }}
+      latest_handbrake_version: ${{ steps.check.outputs.latest_handbrake_version }}
+      latest_libdvdcss_version: ${{ steps.check.outputs.latest_libdvdcss_version }}
+
+  update:
+    name: Build and Release Updated Tools
+    needs: check
+    if: needs.check.outputs.update_available == 'true'
+    runs-on: macos-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Install build dependencies
+        run: |
+          brew update
+          brew install autoconf automake cmake libtool meson nasm ninja pkg-config yasm
+
+      - name: Validate repository
+        run: Scripts/validate-repo.zsh
+
+      - name: Build, publish, and dispatch update
+        env:
+          SWIFTRIP_AUTOMATION_TOKEN: ${{ secrets.SWIFTRIP_AUTOMATION_TOKEN }}
+          SWIFTRIP_TOOLS_REPOSITORY: ${{ github.repository }}
+          SWIFTRIP_TOOLS_BRANCH: main
+          SWIFTRIP_APP_REPOSITORY: fahlman/SwiftRip
+        run: |
+          Scripts/automatic-upstream-update.zsh \
+            --handbrake-version "${{ needs.check.outputs.latest_handbrake_version }}" \
+            --libdvdcss-version "${{ needs.check.outputs.latest_libdvdcss_version }}"
+
+      - name: Write update summary
+        if: always()
+        run: |
+          if [[ -f PreparedToolUpdate/summary.md ]]; then
+            cat PreparedToolUpdate/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  report-failure:
+    name: Record Failed Automatic Update
+    needs: [check, update]
+    if: needs.check.outputs.update_available == 'true' && needs.update.result == 'failure'
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Open or update tracking issue
-        if: steps.check.outputs.update_available == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          ISSUE_TITLE: ${{ steps.check.outputs.issue_title }}
-          ISSUE_BODY_PATH: ${{ steps.check.outputs.issue_body_path }}
+          ISSUE_TITLE: Automatic SwiftRip upstream update failed
         run: |
-          existing_issue="$(
-            gh issue list \
-              --state open \
-              --search "$ISSUE_TITLE in:title" \
-              --json number \
-              --jq '.[0].number // empty'
-          )"
+          issue_body=$(cat <<EOF
+          The automatic SwiftRip upstream update failed.
+
+          - HandBrake: ${{ needs.check.outputs.latest_handbrake_version }}
+          - libdvdcss: ${{ needs.check.outputs.latest_libdvdcss_version }}
+
+          Inspect the failed workflow run before rerunning it.
+          EOF
+          )
+
+          existing_issue="$(gh issue list --state open --search "$ISSUE_TITLE in:title" --json number --jq '.[0].number // empty')"
 
           if [[ -n "$existing_issue" ]]; then
-            gh issue comment "$existing_issue" --body-file "$ISSUE_BODY_PATH"
+            gh issue comment "$existing_issue" --body "$issue_body"
           else
-            gh issue create --title "$ISSUE_TITLE" --body-file "$ISSUE_BODY_PATH"
+            gh issue create --title "$ISSUE_TITLE" --body "$issue_body"
           fi
