@@ -3,9 +3,13 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+COMMON_SCRIPT="$SCRIPT_DIR/lib/common.zsh"
 HANDBRAKE_SCRIPT="$SCRIPT_DIR/build-handbrakecli.zsh"
 LIBDVDCSS_SCRIPT="$SCRIPT_DIR/build-libdvdcss.zsh"
 ISSUE_BODY_PATH="${RUNNER_TEMP:-/tmp}/swiftriptools-upstream-update.md"
+
+# shellcheck source=/dev/null
+source "$COMMON_SCRIPT"
 
 read_assignment() {
     local file_path="$1"
@@ -73,7 +77,7 @@ handbrake_json="$(curl "${github_api_curl_args[@]}" "https://api.github.com/repo
 latest_handbrake_version="$(/usr/bin/python3 -c 'import json,sys; print(json.load(sys.stdin)["tag_name"].lstrip("v"))' <<< "$handbrake_json")"
 
 libdvdcss_tags="$(
-    git ls-remote --tags https://code.videolan.org/videolan/libdvdcss.git \
+    videolan_git_retry ls-remote --tags https://code.videolan.org/videolan/libdvdcss.git \
         | /usr/bin/awk -F/ '/refs\/tags\// && $0 !~ /\^\{\}$/ { print $NF }'
 )"
 latest_libdvdcss_version="$(version_latest ${(f)libdvdcss_tags})"

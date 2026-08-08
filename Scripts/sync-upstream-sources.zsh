@@ -13,7 +13,7 @@ OUTPUT_FILE="${GITHUB_OUTPUT:-}"
 
 HANDBRAKE_UPSTREAM_REPOSITORY_URL="${SWIFTRIP_HANDBRAKE_UPSTREAM_REPOSITORY_URL:-https://github.com/HandBrake/HandBrake.git}"
 HANDBRAKE_SWIFTRIP_REPOSITORY_URL="${SWIFTRIP_HANDBRAKE_REPOSITORY_URL:-https://github.com/fahlman/SwiftRip-HandBrake.git}"
-LIBDVDCSS_UPSTREAM_REPOSITORY_URL="${SWIFTRIP_LIBDVDCSS_UPSTREAM_REPOSITORY_URL:-https://code.videolan.org/videolan/libdvdcss.git}"
+LIBDVDCSS_UPSTREAM_REPOSITORY_URL="https://code.videolan.org/videolan/libdvdcss.git"
 LIBDVDCSS_SWIFTRIP_REPOSITORY_URL="${SWIFTRIP_LIBDVDCSS_REPOSITORY_URL:-https://github.com/fahlman/SwiftRip-libdvdcss.git}"
 AUTOMATION_TOKEN="${SWIFTRIP_AUTOMATION_TOKEN:-${GITHUB_TOKEN:-}}"
 
@@ -108,32 +108,24 @@ authenticated_git() {
 remote_tag_commit() {
     local repository_url="$1"
     local tag_name="$2"
+    local remote_output
     local commit
 
-    if [[ "$repository_url" == https://github.com/* ]]; then
-        commit="$(authenticated_git ls-remote --tags "$repository_url" "refs/tags/${tag_name}^{}" | /usr/bin/awk '{ print $1; exit }')"
-    else
-        commit="$(GIT_TERMINAL_PROMPT=0 git \
-            -c http.connectTimeout=20 \
-            -c http.lowSpeedLimit=1 \
-            -c http.lowSpeedTime=20 \
-            ls-remote --tags "$repository_url" "refs/tags/${tag_name}^{}" \
-            | /usr/bin/awk '{ print $1; exit }')"
-    fi
-    if [[ -z "$commit" ]]; then
+    for ref in "refs/tags/${tag_name}^{}" "refs/tags/${tag_name}"; do
         if [[ "$repository_url" == https://github.com/* ]]; then
-            commit="$(authenticated_git ls-remote --tags "$repository_url" "refs/tags/${tag_name}" | /usr/bin/awk '{ print $1; exit }')"
+            remote_output="$(authenticated_git ls-remote --tags "$repository_url" "$ref")"
         else
-            commit="$(GIT_TERMINAL_PROMPT=0 git \
-                -c http.connectTimeout=20 \
-                -c http.lowSpeedLimit=1 \
-                -c http.lowSpeedTime=20 \
-                ls-remote --tags "$repository_url" "refs/tags/${tag_name}" \
-                | /usr/bin/awk '{ print $1; exit }')"
+            remote_output="$(videolan_git_retry ls-remote --tags "$repository_url" "$ref")"
         fi
-    fi
 
-    print -r -- "$commit"
+        commit="$(/usr/bin/awk '{ print $1; exit }' <<< "$remote_output")"
+        if [[ -n "$commit" ]]; then
+            print -r -- "$commit"
+            return 0
+        fi
+    done
+
+    print -r -- ""
 }
 
 resolve_upstream_tag() {
@@ -159,13 +151,9 @@ clone_tag() {
     local tag_name="$2"
     local destination="$3"
 
-    if [[ "$repository_url" == https://repo.or.cz/* ]]; then
-        git clone --quiet --branch "$tag_name" "$repository_url" "$destination"
-        return
-    fi
-
     if [[ "$repository_url" == https://code.videolan.org/* ]]; then
-        git clone --quiet --depth 1 --branch "$tag_name" "$repository_url" "$destination"
+        videolan_git \
+            clone --quiet --depth 1 --branch "$tag_name" "$repository_url" "$destination"
         return
     fi
 
