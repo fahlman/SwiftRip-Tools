@@ -159,6 +159,11 @@ clone_tag() {
     local tag_name="$2"
     local destination="$3"
 
+    if [[ "$repository_url" == https://code.videolan.org/* ]]; then
+        git clone --quiet --depth 1 --branch "$tag_name" "$repository_url" "$destination"
+        return
+    fi
+
     git clone --quiet --filter=blob:none --no-checkout "$repository_url" "$destination"
     git -C "$destination" fetch --quiet --depth 1 origin "refs/tags/${tag_name}:refs/tags/${tag_name}"
     git -C "$destination" checkout --quiet --detach "$tag_name"
