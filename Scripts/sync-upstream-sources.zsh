@@ -74,6 +74,9 @@ require_value "HandBrake version" "$HANDBRAKE_VERSION"
 require_value "libdvdcss version" "$LIBDVDCSS_VERSION"
 require_command git
 require_command curl
+if [[ "$DRY_RUN" == false ]]; then
+    require_command base64
+fi
 
 if [[ "$DRY_RUN" == false ]]; then
     require_value "SWIFTRIP_AUTOMATION_TOKEN" "$AUTOMATION_TOKEN"
@@ -94,9 +97,12 @@ trap 'rm -rf "$WORK_DIR"' EXIT
 authenticated_git() {
     if [[ "$DRY_RUN" == true || -z "$AUTOMATION_TOKEN" ]]; then
         git "$@"
-    else
-        git -c "http.https://github.com/.extraheader=AUTHORIZATION: bearer $AUTOMATION_TOKEN" "$@"
+        return
     fi
+
+    local encoded_credentials
+    encoded_credentials="$(printf 'x-access-token:%s' "$AUTOMATION_TOKEN" | base64 | tr -d '\n')"
+    git -c "http.extraheader=Authorization: Basic $encoded_credentials" "$@"
 }
 
 remote_tag_commit() {
@@ -104,9 +110,27 @@ remote_tag_commit() {
     local tag_name="$2"
     local commit
 
-    commit="$(authenticated_git ls-remote --tags "$repository_url" "refs/tags/${tag_name}^{}" | /usr/bin/awk '{ print $1; exit }')"
+    if [[ "$repository_url" == https://github.com/* ]]; then
+        commit="$(authenticated_git ls-remote --tags "$repository_url" "refs/tags/${tag_name}^{}" | /usr/bin/awk '{ print $1; exit }')"
+    else
+        commit="$(GIT_TERMINAL_PROMPT=0 git \
+            -c http.connectTimeout=20 \
+            -c http.lowSpeedLimit=1 \
+            -c http.lowSpeedTime=20 \
+            ls-remote --tags "$repository_url" "refs/tags/${tag_name}^{}" \
+            | /usr/bin/awk '{ print $1; exit }')"
+    fi
     if [[ -z "$commit" ]]; then
-        commit="$(authenticated_git ls-remote --tags "$repository_url" "refs/tags/${tag_name}" | /usr/bin/awk '{ print $1; exit }')"
+        if [[ "$repository_url" == https://github.com/* ]]; then
+            commit="$(authenticated_git ls-remote --tags "$repository_url" "refs/tags/${tag_name}" | /usr/bin/awk '{ print $1; exit }')"
+        else
+            commit="$(GIT_TERMINAL_PROMPT=0 git \
+                -c http.connectTimeout=20 \
+                -c http.lowSpeedLimit=1 \
+                -c http.lowSpeedTime=20 \
+                ls-remote --tags "$repository_url" "refs/tags/${tag_name}" \
+                | /usr/bin/awk '{ print $1; exit }')"
+        fi
     fi
 
     print -r -- "$commit"
@@ -150,7 +174,7 @@ push_tag() {
         return 0
     fi
 
-    git -C "$source_dir" -c "http.https://github.com/.extraheader=AUTHORIZATION: bearer $AUTOMATION_TOKEN" \
+    authenticated_git -C "$source_dir" \
         push --quiet "$repository_url" "HEAD:refs/tags/$tag_name"
 }
 
