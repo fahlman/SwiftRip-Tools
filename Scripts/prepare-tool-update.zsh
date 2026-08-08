@@ -142,7 +142,7 @@ if [[ ! "$HANDBRAKE_VERSION" =~ '^[0-9]+(\.[0-9]+){1,3}$' ]]; then
     exit 64
 fi
 if [[ ! "$LIBDVDCSS_VERSION" =~ '^[0-9]+(\.[0-9]+){1,3}$' ]]; then
-    echo "ERROR: libdvdcss version must look like 1.5.0." >&2
+    echo "ERROR: libdvdcss version must look like 1.6.0." >&2
     exit 64
 fi
 

@@ -21,8 +21,8 @@ HandBrakeCLI is not authored by the SwiftRip project. HandBrake and HandBrakeCLI
 - Project: VideoLAN libdvdcss
 - Website: https://www.videolan.org/developers/libdvdcss.html
 - Source: https://code.videolan.org/videolan/libdvdcss
-- SwiftRip source pin: https://github.com/fahlman/SwiftRip-libdvdcss/tree/swiftrip-libdvdcss-1.5.0
-- Current SwiftRip-Tools target version: 1.5.0
+- SwiftRip source pin: https://github.com/fahlman/SwiftRip-libdvdcss/tree/swiftrip-libdvdcss-1.6.0
+- Current SwiftRip-Tools target version: 1.6.0
 - License: GNU General Public License
 - Use in SwiftRip-Tools: built as an app-local dynamic library so SwiftRip.app does not rely on Homebrew, MacPorts, `/usr/local/lib`, `/opt/local/lib`, or other user-installed runtime libraries.
 
