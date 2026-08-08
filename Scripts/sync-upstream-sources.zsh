@@ -159,8 +159,12 @@ clone_tag() {
     local tag_name="$2"
     local destination="$3"
 
-    if [[ "$repository_url" == https://code.videolan.org/* ||
-          "$repository_url" == https://repo.or.cz/* ]]; then
+    if [[ "$repository_url" == https://repo.or.cz/* ]]; then
+        git clone --quiet --branch "$tag_name" "$repository_url" "$destination"
+        return
+    fi
+
+    if [[ "$repository_url" == https://code.videolan.org/* ]]; then
         git clone --quiet --depth 1 --branch "$tag_name" "$repository_url" "$destination"
         return
     fi
