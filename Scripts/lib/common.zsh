@@ -2,6 +2,16 @@
 # Apple silicon, so arm64 is the only architecture (see the shared rules).
 SWIFTRIP_TOOLS_MIN_MACOS="27.0"
 
+# A package's name includes its minimum macOS, so rebuilding the same HandBrake
+# and libdvdcss for a newer macOS publishes a new release instead of replacing
+# a package that SwiftRip pins by checksum.
+swiftrip_tools_package_version() {
+    local handbrake_version="$1"
+    local libdvdcss_version="$2"
+
+    print -r -- "handbrake-${handbrake_version}-libdvdcss-${libdvdcss_version}-macos-${SWIFTRIP_TOOLS_MIN_MACOS}"
+}
+
 require_command() {
     local command_name="$1"
 

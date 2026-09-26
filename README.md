@@ -113,6 +113,8 @@ Scripts/package-swiftrip-tools.zsh
 
 Publish the generated file from `Packages/` to the GitHub release URL recorded in the matching manifest under `Manifest/`. SwiftRip CI verifies the manifest checksum before extracting the tools and running the full bundle integrity tests.
 
+Package and release names follow `handbrake-<version>-libdvdcss-<version>-macos-<minimum macOS>`. Rebuilding the same tools for a newer macOS therefore publishes a new release and never replaces a package that SwiftRip already pins by checksum.
+
 Use the publish helper to either upload with GitHub CLI or open the exact release page and reveal the package in Finder:
 
 ```sh

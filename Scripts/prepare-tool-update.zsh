@@ -148,7 +148,7 @@ fi
 
 LIBDVDCSS_SWIFTRIP_TAG="swiftrip-libdvdcss-${LIBDVDCSS_VERSION}"
 HANDBRAKE_SWIFTRIP_TAG="swiftrip-handbrake-${HANDBRAKE_VERSION}"
-PACKAGE_VERSION="handbrake-${HANDBRAKE_VERSION}-libdvdcss-${LIBDVDCSS_VERSION}"
+PACKAGE_VERSION="$(swiftrip_tools_package_version "$HANDBRAKE_VERSION" "$LIBDVDCSS_VERSION")"
 RELEASE_TAG="$PACKAGE_VERSION"
 RELEASE_BASE_URL="https://github.com/${TOOLS_REPOSITORY}/releases/download/${RELEASE_TAG}"
 
@@ -203,7 +203,7 @@ typeset -A package_url_by_arch
 for arch in arm64; do
     assert_supported_tools_arch "$arch"
 
-    artifact_name="swiftrip-tools-macos-${arch}-handbrake-${HANDBRAKE_VERSION}-libdvdcss-${LIBDVDCSS_VERSION}.tar.gz"
+    artifact_name="swiftrip-tools-macos-${arch}-${PACKAGE_VERSION}.tar.gz"
     package_url="${RELEASE_BASE_URL}/${artifact_name}"
     package_name_by_arch[$arch]="$artifact_name"
     package_url_by_arch[$arch]="$package_url"
