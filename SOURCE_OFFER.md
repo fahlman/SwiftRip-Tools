@@ -75,21 +75,21 @@ Scripts/publish-swiftrip-tools.zsh
 The releases below were published before Intel builds were retired. Their packages, Intel and Apple silicon, stay available unchanged. Rebuild a package from the commit listed for its release, not from the release tag. That commit first recorded the package's SHA-256 in `Manifest/`, and its build scripts pin the sources listed. For the Intel package, run `Scripts/bootstrap-tools.zsh --force --arch x86_64` there.
 
 - `handbrake-1.11.2-libdvdcss-1.6.0`
-  - **Built from:** `75e00ec5bc50c790122712f8e41ee03552718ffc`.
+  - **Rebuild from:** `75e00ec5bc50c790122712f8e41ee03552718ffc`.
   - **HandBrake:** SwiftRip-HandBrake tag `swiftrip-handbrake-1.11.2` (`e1ac9de2cf1aa24c2b8a651b13735c21335a1229`).
   - **libdvdcss:** SwiftRip-libdvdcss tag `swiftrip-libdvdcss-1.6.0` (`9de0528e142d6dd31c4d198130d4a48ff3397d2b`).
   - **Release tag:** points at `ed2b00fdf832018bd39113cc2b57cdccd8e55bd1`, which still pins libdvdcss 1.5.0, because these pins were committed just after publishing.
 - `handbrake-1.11.2-libdvdcss-1.5.0`
-  - **Built from:** `369f9c3fb2ed3cc60bf391e0e63d7033ad794657`, which is also its release tag.
+  - **Rebuild from:** `369f9c3fb2ed3cc60bf391e0e63d7033ad794657`, which is also its release tag.
   - **HandBrake:** `swiftrip-handbrake-1.11.2` (`e1ac9de2cf1aa24c2b8a651b13735c21335a1229`).
   - **libdvdcss:** `swiftrip-libdvdcss-1.5.0` (`c838ca97553aeb8505b7baf02b9a90f8505de212`).
 - `handbrake-1.11.1-libdvdcss-1.5.0`
-  - **Built from:** `34c8b882640110478bbd8f23f28ed652d4c07083`.
+  - **Rebuild from:** `34c8b882640110478bbd8f23f28ed652d4c07083`.
   - **HandBrake:** `swiftrip-handbrake-1.11.1` (`49730cd08f092193ab0e16be8b68be80d7a989ce`).
   - **libdvdcss:** `swiftrip-libdvdcss-1.5.0` (`c838ca97553aeb8505b7baf02b9a90f8505de212`).
   - **Release tag:** points at `0c1315930da19c2af6f2004c8740347b9b381e68`, which builds from the upstream source archives instead. The release's current packages were uploaded later.
 - `swiftrip-tools-1`
-  - **Built from:** `3e13ef322cd8a7f0125433e167a20fda40e2fa9d`.
+  - **Rebuild from:** `3e13ef322cd8a7f0125433e167a20fda40e2fa9d`.
   - **HandBrake:** the upstream HandBrake 1.11.1 source archive, plus the libdvdread patch in that commit's `Patches/HandBrake/`.
   - **libdvdcss:** VideoLAN's libdvdcss 1.5.0 archive. Both archives are pinned by SHA-256 in that commit's scripts.
   - **Release tag:** points at `bc0ed0f08124cc568752ecc827b24f07e09fd820`, which pins the same archives after its scripts were reorganized.
