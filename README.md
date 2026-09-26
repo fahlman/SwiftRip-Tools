@@ -37,7 +37,7 @@ The bootstrap script first verifies any existing local artifacts. If they are mi
 - `Artifacts/macos-arm64/HandBrakeCLI`
 - `Artifacts/macos-arm64/libdvdcss.2.dylib`
 
-The tools are built for Apple silicon only, with macOS 27 as the minimum. Intel builds were retired because macOS 27 does not run on Intel Macs; Intel packages that were already published stay available from their releases.
+The tools are built for Apple silicon only, with macOS 27 as the minimum. Intel builds were retired because macOS 27 does not run on Intel Macs; Intel packages that were already published stay available from their releases. `SOURCE_OFFER.md` lists the commit each earlier release was built from.
 
 Force a rebuild with:
 
