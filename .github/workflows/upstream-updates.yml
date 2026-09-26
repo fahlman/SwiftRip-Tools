@@ -43,6 +43,11 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
 
+      - name: Install Metal toolchain
+        # HandBrake compiles Metal shaders, and the xcode-27 image does not
+        # include the toolchain yet (actions/runner-images#14548).
+        run: xcodebuild -downloadComponent MetalToolchain
+
       - name: Install build dependencies
         run: |
           brew update
