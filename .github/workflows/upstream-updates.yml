@@ -12,7 +12,7 @@ permissions:
 jobs:
   check:
     name: Check Upstream Components
-    runs-on: macos-latest
+    runs-on: xcode-27
 
     steps:
       - name: Check out repository
@@ -33,7 +33,7 @@ jobs:
     name: Build and Release Updated Tools
     needs: check
     if: needs.check.outputs.update_available == 'true'
-    runs-on: macos-latest
+    runs-on: xcode-27
     timeout-minutes: 360
 
     steps:
@@ -42,6 +42,11 @@ jobs:
 
       - name: Show Xcode version
         run: xcodebuild -version
+
+      - name: Install Metal toolchain
+        # HandBrake compiles Metal shaders, and the xcode-27 image does not
+        # include the toolchain yet (actions/runner-images#14548).
+        run: xcodebuild -downloadComponent MetalToolchain
 
       - name: Install build dependencies
         run: |

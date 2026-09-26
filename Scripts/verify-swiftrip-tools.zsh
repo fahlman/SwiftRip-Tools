@@ -39,6 +39,8 @@ fi
 echo ""
 echo "HandBrakeCLI:"
 file "$HANDBRAKE_ARTIFACT"
+# Record the minimum macOS and SDK the binary was built for.
+/usr/bin/vtool -show-build "$HANDBRAKE_ARTIFACT"
 if ! file "$HANDBRAKE_ARTIFACT" | grep -q "$TOOLS_ARCH"; then
     echo "ERROR: HandBrakeCLI is not $TOOLS_ARCH."
     exit 1
@@ -64,6 +66,8 @@ fi
 echo ""
 echo "libdvdcss.2.dylib:"
 file "$LIBDVDCSS_ARTIFACT"
+# Record the minimum macOS and SDK the binary was built for.
+/usr/bin/vtool -show-build "$LIBDVDCSS_ARTIFACT"
 if ! file "$LIBDVDCSS_ARTIFACT" | grep -q "$TOOLS_ARCH"; then
     echo "ERROR: libdvdcss.2.dylib is not $TOOLS_ARCH."
     exit 1

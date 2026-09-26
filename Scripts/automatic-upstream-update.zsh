@@ -22,8 +22,8 @@ usage() {
     cat <<'USAGE'
 Usage: Scripts/automatic-upstream-update.zsh --handbrake-version VERSION --libdvdcss-version VERSION
 
-Synchronize exact upstream source tags, build and package both architectures,
-publish a SwiftRip-Tools GitHub release, update this repository's pins, and
+Synchronize exact upstream source tags, build and package the Apple silicon
+tools, publish a SwiftRip-Tools GitHub release, update this repository's pins, and
 dispatch the exact tool revision to SwiftRip.
 
 Required environment:
@@ -136,8 +136,10 @@ OLD_HANDBRAKE_VERSION="$(read_assignment "$HANDBRAKE_SCRIPT" "HANDBRAKE_VERSION"
 OLD_HANDBRAKE_COMMIT="$(read_assignment "$HANDBRAKE_SCRIPT" "HANDBRAKE_SWIFTRIP_COMMIT")"
 OLD_LIBDVDCSS_VERSION="$(read_assignment "$LIBDVDCSS_SCRIPT" "LIBDVDCSS_VERSION")"
 OLD_LIBDVDCSS_COMMIT="$(read_assignment "$LIBDVDCSS_SCRIPT" "LIBDVDCSS_SWIFTRIP_COMMIT")"
-OLD_PACKAGE_VERSION="handbrake-${OLD_HANDBRAKE_VERSION}-libdvdcss-${OLD_LIBDVDCSS_VERSION}"
-PACKAGE_VERSION="handbrake-${HANDBRAKE_VERSION}-libdvdcss-${LIBDVDCSS_VERSION}"
+# The documentation names the package the repository pins now, whatever
+# minimum macOS it was built for.
+OLD_PACKAGE_VERSION="$(json_value "$ROOT_DIR/Manifest/swiftrip-tools.json" version)"
+PACKAGE_VERSION="$(swiftrip_tools_package_version "$HANDBRAKE_VERSION" "$LIBDVDCSS_VERSION")"
 RELEASE_TAG="$PACKAGE_VERSION"
 RELEASE_NOTES_PATH="$OUTPUT_DIR/ReleaseNotes/${PACKAGE_VERSION}.md"
 
@@ -174,7 +176,6 @@ SWIFTRIP_AUTOMATION_TOKEN="$AUTOMATION_TOKEN" \
 
 echo "Updating SwiftRip-Tools manifests and provenance..."
 /bin/cp "$OUTPUT_DIR/Manifest/swiftrip-tools.json" "$ROOT_DIR/Manifest/swiftrip-tools.json"
-/bin/cp "$OUTPUT_DIR/Manifest/swiftrip-tools-x86_64.json" "$ROOT_DIR/Manifest/swiftrip-tools-x86_64.json"
 
 update_assignment "$HANDBRAKE_SCRIPT" "HANDBRAKE_VERSION" "$HANDBRAKE_VERSION"
 update_assignment "$HANDBRAKE_SCRIPT" "HANDBRAKE_SWIFTRIP_TAG" "$handbrake_tag"
@@ -227,7 +228,6 @@ fi
 echo "Committing updated SwiftRip-Tools pins..."
 git -C "$ROOT_DIR" add \
     Manifest/swiftrip-tools.json \
-    Manifest/swiftrip-tools-x86_64.json \
     Scripts/build-handbrakecli.zsh \
     Scripts/build-libdvdcss.zsh \
     README.md \

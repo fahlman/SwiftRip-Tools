@@ -11,7 +11,7 @@ on:
 jobs:
   validate:
     name: Validate and Fetch Packages
-    runs-on: macos-latest
+    runs-on: xcode-27
 
     steps:
       - name: Check out repository
@@ -25,6 +25,3 @@ jobs:
 
       - name: Fetch Apple Silicon package
         run: Scripts/fetch-swiftrip-tools.zsh --arch arm64
-
-      - name: Fetch Intel package
-        run: Scripts/fetch-swiftrip-tools.zsh --arch x86_64

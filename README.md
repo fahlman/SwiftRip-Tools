@@ -22,7 +22,7 @@ It contains:
 
 - HandBrakeCLI 1.11.2
 - libdvdcss 1.6.0
-- Apple Silicon and Intel package tarballs pinned by SHA-256 in `Manifest/`
+- Apple silicon package tarballs pinned by SHA-256 in `Manifest/`
 
 ## Contributor bootstrap
 
@@ -37,11 +37,7 @@ The bootstrap script first verifies any existing local artifacts. If they are mi
 - `Artifacts/macos-arm64/HandBrakeCLI`
 - `Artifacts/macos-arm64/libdvdcss.2.dylib`
 
-Intel artifacts can be built locally with:
-
-```sh
-Scripts/bootstrap-tools.zsh --arch x86_64
-```
+The tools are built for Apple silicon only, with macOS 27 as the minimum. Intel builds were retired because macOS 27 does not run on Intel Macs; Intel packages that were already published stay available from their releases. `SOURCE_OFFER.md` lists the commit to rebuild each earlier release from and the sources it pins.
 
 Force a rebuild with:
 
@@ -105,7 +101,7 @@ HandBrake and libdvdcss releases are monitored by:
 Scripts/check-upstream-updates.zsh
 ```
 
-The `Upstream Updates` GitHub Actions workflow runs that check every Monday and can also be started manually. When either upstream version is newer than the pinned SwiftRip-Tools version, it creates the matching source tags, applies the single HandBrake app-bundle patch, builds and verifies both Apple Silicon and Intel packages, publishes the SwiftRip-Tools release, updates the repository pins, and dispatches the exact tool revision to SwiftRip.
+The `Upstream Updates` GitHub Actions workflow runs that check every Monday and can also be started manually. When either upstream version is newer than the pinned SwiftRip-Tools version, it creates the matching source tags, applies the single HandBrake app-bundle patch, builds and verifies the Apple silicon package, publishes the SwiftRip-Tools release, updates the repository pins, and dispatches the exact tool revision to SwiftRip.
 
 ## Packaging
 
@@ -115,13 +111,9 @@ After a successful local rebuild, create the downloadable tool package with:
 Scripts/package-swiftrip-tools.zsh
 ```
 
-For Intel:
-
-```sh
-Scripts/package-swiftrip-tools.zsh --arch x86_64
-```
-
 Publish the generated file from `Packages/` to the GitHub release URL recorded in the matching manifest under `Manifest/`. SwiftRip CI verifies the manifest checksum before extracting the tools and running the full bundle integrity tests.
+
+Package and release names follow `handbrake-<version>-libdvdcss-<version>-macos-<minimum macOS>`. Rebuilding the same tools for a newer macOS therefore publishes a new release and never replaces a package that SwiftRip already pins by checksum.
 
 Use the publish helper to either upload with GitHub CLI or open the exact release page and reveal the package in Finder:
 
@@ -129,7 +121,6 @@ Use the publish helper to either upload with GitHub CLI or open the exact releas
 Scripts/publish-swiftrip-tools.zsh
 ```
 
-For Intel, pass `--arch x86_64`.
 
 ## Source and licenses
 

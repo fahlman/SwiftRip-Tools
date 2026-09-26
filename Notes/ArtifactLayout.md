@@ -9,9 +9,6 @@ Artifacts/macos-arm64/
   HandBrakeCLI
   libdvdcss.2.dylib
 
-Artifacts/macos-x86_64/
-  HandBrakeCLI
-  libdvdcss.2.dylib
 ```
 
 ## Intended app bundle layout
@@ -29,7 +26,7 @@ SwiftRip.app/
 ```
 
 ## Rules
-- SwiftRip release artifacts may be built as separate ARM64 and x86_64 DMGs.
+- SwiftRip release artifacts are built for Apple silicon (arm64) only.
 - SwiftRip.app must not rely on Homebrew, MacPorts, /usr/local/lib, /opt/local/lib, or user-installed HandBrake.
 - SwiftRip.app should consume artifacts produced by SwiftRip-Tools.
 - Tool artifacts should be reproducible.
