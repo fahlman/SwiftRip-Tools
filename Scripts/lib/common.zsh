@@ -1,3 +1,7 @@
+# Every SwiftRip tool artifact targets the newest macOS, which runs only on
+# Apple silicon, so arm64 is the only architecture (see the shared rules).
+SWIFTRIP_TOOLS_MIN_MACOS="27.0"
+
 require_command() {
     local command_name="$1"
 
@@ -82,11 +86,11 @@ assert_supported_tools_arch() {
     local label="${2:-SwiftRip-Tools}"
 
     case "$arch" in
-        arm64|x86_64)
+        arm64)
             ;;
         *)
             echo "ERROR: Unsupported $label architecture: $arch" >&2
-            echo "Supported architectures: arm64, x86_64" >&2
+            echo "Supported architecture: arm64. Intel builds were retired: macOS $SWIFTRIP_TOOLS_MIN_MACOS runs only on Apple silicon." >&2
             exit 64
             ;;
     esac
@@ -101,9 +105,6 @@ manifest_file_for_arch() {
     case "$arch" in
         arm64)
             echo "$tools_dir/Manifest/swiftrip-tools.json"
-            ;;
-        x86_64)
-            echo "$tools_dir/Manifest/swiftrip-tools-x86_64.json"
             ;;
     esac
 }

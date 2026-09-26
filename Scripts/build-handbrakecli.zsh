@@ -123,6 +123,7 @@ env -u CPATH \
     -u CPPFLAGS \
     -u CXXFLAGS \
     -u LDFLAGS \
+    MACOSX_DEPLOYMENT_TARGET="$SWIFTRIP_TOOLS_MIN_MACOS" \
     PKG_CONFIG_LIBDIR="$ARCH_BUILD_DIR/contrib/lib/pkgconfig" \
     PATH="${SWIFTRIP_BUILD_TOOL_PATH:-/opt/homebrew/bin:/usr/local/bin:/opt/local/bin:/usr/bin:/bin:/usr/sbin:/sbin}" \
     ./configure \
@@ -135,6 +136,7 @@ env -u CPATH \
       --disable-ffmpeg-prores \
       --disable-libdovi \
       --arch "$TOOLS_ARCH" \
+      --minver "$SWIFTRIP_TOOLS_MIN_MACOS" \
       --build "$ARCH_BUILD_DIR" \
       --prefix "$ARCH_PREFIX_DIR" \
       --launch \

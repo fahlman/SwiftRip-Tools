@@ -113,7 +113,7 @@ When the update workflow succeeds it will:
 
 - Create the matching SwiftRip-HandBrake source tag with the app-bundle patch.
 - Create the matching SwiftRip-libdvdcss source tag.
-- Build and verify Apple Silicon and Intel packages.
+- Build and verify the Apple silicon package.
 - Publish the SwiftRip-Tools release assets.
 - Update SwiftRip's manifests and provenance.
 - Create a new SwiftRip version tag for the GitHub release workflow.

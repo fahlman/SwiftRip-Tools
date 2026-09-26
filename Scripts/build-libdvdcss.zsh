@@ -138,8 +138,8 @@ build_arch() {
 c = 'clang'
 
 [built-in options]
-c_args = ['-arch', '$arch', '-mmacosx-version-min=13.0']
-c_link_args = ['-arch', '$arch', '-mmacosx-version-min=13.0']
+c_args = ['-arch', '$arch', '-mmacosx-version-min=$SWIFTRIP_TOOLS_MIN_MACOS']
+c_link_args = ['-arch', '$arch', '-mmacosx-version-min=$SWIFTRIP_TOOLS_MIN_MACOS']
 default_library = 'shared'
 
 [project options]

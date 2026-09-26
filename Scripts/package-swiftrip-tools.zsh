@@ -20,7 +20,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         *)
-            echo "Usage: $0 [--arch arm64|x86_64]"
+            echo "Usage: $0 [--arch arm64]"
             exit 64
             ;;
     esac

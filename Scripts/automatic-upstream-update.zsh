@@ -174,7 +174,6 @@ SWIFTRIP_AUTOMATION_TOKEN="$AUTOMATION_TOKEN" \
 
 echo "Updating SwiftRip-Tools manifests and provenance..."
 /bin/cp "$OUTPUT_DIR/Manifest/swiftrip-tools.json" "$ROOT_DIR/Manifest/swiftrip-tools.json"
-/bin/cp "$OUTPUT_DIR/Manifest/swiftrip-tools-x86_64.json" "$ROOT_DIR/Manifest/swiftrip-tools-x86_64.json"
 
 update_assignment "$HANDBRAKE_SCRIPT" "HANDBRAKE_VERSION" "$HANDBRAKE_VERSION"
 update_assignment "$HANDBRAKE_SCRIPT" "HANDBRAKE_SWIFTRIP_TAG" "$handbrake_tag"
@@ -227,7 +226,6 @@ fi
 echo "Committing updated SwiftRip-Tools pins..."
 git -C "$ROOT_DIR" add \
     Manifest/swiftrip-tools.json \
-    Manifest/swiftrip-tools-x86_64.json \
     Scripts/build-handbrakecli.zsh \
     Scripts/build-libdvdcss.zsh \
     README.md \

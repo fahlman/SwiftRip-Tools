@@ -58,25 +58,19 @@ Build and verify Apple Silicon artifacts:
 Scripts/bootstrap-tools.zsh --force
 ```
 
-Build and verify Intel artifacts:
-
-```sh
-Scripts/bootstrap-tools.zsh --arch x86_64 --force
-```
-
 Package a rebuilt artifact set:
 
 ```sh
 Scripts/package-swiftrip-tools.zsh
-Scripts/package-swiftrip-tools.zsh --arch x86_64
 ```
 
 Publish package assets to the GitHub release named by the manifests:
 
 ```sh
 Scripts/publish-swiftrip-tools.zsh
-Scripts/publish-swiftrip-tools.zsh --arch x86_64
 ```
+
+Intel packages published before Intel builds were retired are rebuilt with the scripts at their own release tags, where `--arch x86_64` is still supported.
 
 ## Binary Distribution Requirement
 

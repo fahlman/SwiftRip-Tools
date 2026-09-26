@@ -22,8 +22,8 @@ usage() {
     cat <<EOF
 Usage: $0 --handbrake-version VERSION --libdvdcss-version VERSION [--output-dir PATH]
 
-Builds and packages a proposed SwiftRip-Tools update for both arm64 and
-x86_64. The script verifies that matching SwiftRip source tags exist, builds
+Builds and packages a proposed SwiftRip-Tools update for arm64 (Apple
+silicon). The script verifies that matching SwiftRip source tags exist, builds
 from those exact commits, generates package checksums, release notes,
 candidate manifests, and a manifest diff.
 
@@ -200,7 +200,7 @@ typeset -A package_sha_by_arch
 typeset -A package_name_by_arch
 typeset -A package_url_by_arch
 
-for arch in arm64 x86_64; do
+for arch in arm64; do
     assert_supported_tools_arch "$arch"
 
     artifact_name="swiftrip-tools-macos-${arch}-handbrake-${HANDBRAKE_VERSION}-libdvdcss-${LIBDVDCSS_VERSION}.tar.gz"
@@ -240,9 +240,6 @@ for arch in arm64 x86_64; do
         arm64)
             manifest_name="swiftrip-tools.json"
             ;;
-        x86_64)
-            manifest_name="swiftrip-tools-x86_64.json"
-            ;;
     esac
 
     write_manifest \
@@ -268,8 +265,6 @@ Prepared SwiftRip-Tools package set for SwiftRip.app.
 
 - \`${package_name_by_arch[arm64]}\`
   - SHA-256: \`${package_sha_by_arch[arm64]}\`
-- \`${package_name_by_arch[x86_64]}\`
-  - SHA-256: \`${package_sha_by_arch[x86_64]}\`
 
 ## Provenance
 
@@ -283,7 +278,6 @@ The generated manifests pin the candidate release asset URLs and SHA-256 checksu
 EOF
 
 diff -u "$ROOT_DIR/Manifest/swiftrip-tools.json" "$OUTPUT_DIR/Manifest/swiftrip-tools.json" > "$OUTPUT_DIR/manifest.diff" || true
-diff -u "$ROOT_DIR/Manifest/swiftrip-tools-x86_64.json" "$OUTPUT_DIR/Manifest/swiftrip-tools-x86_64.json" >> "$OUTPUT_DIR/manifest.diff" || true
 
 summary_path="$OUTPUT_DIR/summary.md"
 cat > "$summary_path" <<EOF
@@ -304,12 +298,10 @@ cat > "$summary_path" <<EOF
 | Arch | Package | SHA-256 |
 | --- | --- | --- |
 | arm64 | \`${package_name_by_arch[arm64]}\` | \`${package_sha_by_arch[arm64]}\` |
-| x86_64 | \`${package_name_by_arch[x86_64]}\` | \`${package_sha_by_arch[x86_64]}\` |
 
 ## Generated Files
 
 - \`Manifest/swiftrip-tools.json\`
-- \`Manifest/swiftrip-tools-x86_64.json\`
 - \`ReleaseNotes/${PACKAGE_VERSION}.md\`
 - \`manifest.diff\`
 - Candidate package tarballs under \`Packages/\`
